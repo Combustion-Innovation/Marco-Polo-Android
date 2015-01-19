@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_weight="1" tools:context=".InitActivity">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:layout_weight="1" >
+        <Button
+            android:id="@+id/init_log_in_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/init_log_in_text"
+            android:textColor="@color/white"
+            android:background="@drawable/darkening_blue"
+            android:textSize="70dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:layout_weight="1" >
+        <Button
+            android:id="@+id/sign_up_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/init_sign_up_text"
+            android:textColor="@color/white"
+            android:background="@drawable/darkening_green"
+            android:textSize="70dp"
+            />
+    </LinearLayout>
+
+</LinearLayout>

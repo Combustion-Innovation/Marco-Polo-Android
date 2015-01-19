@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/blue">
+
+    <RelativeLayout
+        android:id="@+id/sign_up_header"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true" >
+
+        <TextView
+            android:id="@+id/back"
+            android:layout_width="180dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|left"
+            android:text="@string/back_button_text"
+            android:textSize="35dp"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@+id/sign_up_header">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/sign_up_intro"
+            android:textSize="25dp"
+            android:textColor="@color/white"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/sign_up_username_field"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:text="@string/username_placeholder"
+            android:textColor="@color/white"
+            android:background="@color/green"/>
+
+        <EditText
+            android:id="@+id/sign_up_phone_field"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/sign_up_username_field"
+            android:gravity="center"
+            android:text="@string/phone_placeholder"
+            android:textColor="@color/white"
+            android:background="@color/dark_green"/>
+
+        <EditText
+            android:id="@+id/sign_up_password_field"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:text="@string/password_placeholder"
+            android:textColor="@color/white"
+            android:background="@color/green"
+            android:password="false" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/log_in_enter_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/darkening_green"
+            android:text="@string/log_in_enter"
+            android:textSize="40dp"
+            android:textColor="@color/white"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>
