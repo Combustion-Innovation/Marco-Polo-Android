@@ -54,10 +54,10 @@ public class InitActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_init);
-        //setContentView(R.layout.activity_settings);
+        //setContentView(R.layout.activity_init);
+        setContentView(R.layout.activity_invite);
 
-        //*
+        /*
         logInButton = (Button) findViewById(R.id.init_log_in_button);
         signUpButton = (Button) findViewById(R.id.sign_up_button);
 

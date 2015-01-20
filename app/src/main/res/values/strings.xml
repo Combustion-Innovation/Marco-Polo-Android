@@ -34,5 +34,8 @@
     <string name="verification_resend_code">Resend Code</string>
     <string name="verification_cancel">Cancel</string>
     <string name="verification_submit">Submit</string>
+    <string name="invite_search_bar_placeholder">Find MarcoPolo User</string>
+    <string name="share">Share</string>
+    <string name="invite">INVITE</string>
 
 </resources>
