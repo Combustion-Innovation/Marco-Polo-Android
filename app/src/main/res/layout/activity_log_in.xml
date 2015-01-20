@@ -41,7 +41,8 @@
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:gravity="center"
-            android:text="@string/username_and_phone_placeholder"
+            android:hint="@string/username_and_phone_placeholder"
+            android:textColorHint="@color/white"
             android:textColor="@color/white"
             android:background="@color/green"/>
 
@@ -51,7 +52,8 @@
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:gravity="center"
-            android:text="@string/password_placeholder"
+            android:hint="@string/password_placeholder"
+            android:textColorHint="@color/white"
             android:textColor="@color/white"
             android:background="@color/dark_green"
             android:password="false" />

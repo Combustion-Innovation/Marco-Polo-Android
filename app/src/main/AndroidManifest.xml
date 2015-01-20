@@ -26,6 +26,10 @@
             android:name=".SignUpActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="0257361ee2daf1e289a717f69894b5cd1ddec965" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

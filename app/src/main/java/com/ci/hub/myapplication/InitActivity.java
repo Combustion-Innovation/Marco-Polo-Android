@@ -12,9 +12,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import io.fabric.sdk.android.Fabric;
 
 
 public class InitActivity extends FragmentActivity {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "jXkwG4Jbd9OZP01TLXnkMqs6F";
+    private static final String TWITTER_SECRET = "xpqx0c8GSKuImdguIYAOt4oRl4i86m1OF7tshnGbvI4eT0I9Op";
     public static final String TAG = "InitActivity";
     private static final int LOG_IN = 0;
     private static final int SIGN_UP = 1;
@@ -54,10 +61,12 @@ public class InitActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_init);
-        setContentView(R.layout.activity_invite);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
+        setContentView(R.layout.activity_init);
+        //setContentView(R.layout.activity_invite);
 
-        /*
+        //*
         logInButton = (Button) findViewById(R.id.init_log_in_button);
         signUpButton = (Button) findViewById(R.id.sign_up_button);
 
@@ -74,6 +83,10 @@ public class InitActivity extends FragmentActivity {
             if (requestCode == LOG_IN) {
                 Log.d(TAG, "The user's id is " + data.getExtras().getInt("user_id"));
                 Log.d(TAG, "username: " + data.getExtras().getString("username"));
+                Log.d(TAG, "password: " + data.getExtras().getString("password"));
+            } else if (requestCode == SIGN_UP) {
+                Log.d(TAG, "username: " + data.getExtras().getString("username"));
+                Log.d(TAG, "phone: " + data.getExtras().getString("phone"));
                 Log.d(TAG, "password: " + data.getExtras().getString("password"));
             }
         } else {
