@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,8 +11,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
+
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+
 import io.fabric.sdk.android.Fabric;
 
 
@@ -23,6 +24,7 @@ public class InitActivity extends FragmentActivity {
     private static final String TWITTER_KEY = "jXkwG4Jbd9OZP01TLXnkMqs6F";
     private static final String TWITTER_SECRET = "xpqx0c8GSKuImdguIYAOt4oRl4i86m1OF7tshnGbvI4eT0I9Op";
     public static final String TAG = "InitActivity";
+
     private static final int LOG_IN = 0;
     private static final int SIGN_UP = 1;
 
@@ -61,6 +63,7 @@ public class InitActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // twitter stuff
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_init);
@@ -72,8 +75,6 @@ public class InitActivity extends FragmentActivity {
 
         logInButton.setOnTouchListener(buttonOTL);
         signUpButton.setOnTouchListener(buttonOTL);
-
-        Log.d(TAG, "Hello???");
         //*/
     }
 

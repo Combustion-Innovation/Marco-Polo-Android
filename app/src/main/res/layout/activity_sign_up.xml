@@ -60,6 +60,7 @@
             android:layout_height="50dp"
             android:layout_below="@+id/sign_up_username_field"
             android:gravity="center"
+            android:phoneNumber="true"
             android:hint="@string/phone_placeholder"
             android:textColorHint="@color/white"
             android:textColor="@color/white"

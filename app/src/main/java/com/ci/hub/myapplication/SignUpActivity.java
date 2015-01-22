@@ -1,8 +1,9 @@
 package com.ci.hub.myapplication;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -10,19 +11,29 @@ import android.widget.Toast;
 
 import com.ci.generalclasses.loginmanagers.Communicator;
 import com.ci.generalclasses.loginmanagers.LoginManager;
+import com.techventus.server.voice.Voice;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static android.view.View.OnClickListener;
 
 /**
  * Created by Alex on 1/18/15.
  */
-public class SignUpActivity extends Activity implements Communicator {
+public class SignUpActivity extends FragmentActivity implements Communicator {
     public static final String TAG = "SignUpActivity";
+
+    private static final String GOOGLE_VOICE_USERNAME = "alex.heritier@gmail.com";
+    private static final String GOOGLE_VOICE_PASSWORD = "majinvegeta";
+
+    private String submittedUsername;
+    private String submittedPhone;
+    private String submittedPassword;
+    private String verificationCode;
 
     private final OnClickListener backOCL = new OnClickListener() {
         @Override
@@ -46,8 +57,14 @@ public class SignUpActivity extends Activity implements Communicator {
                 Log.d(TAG, "Invalid entries!");
                 Toast.makeText(SignUpActivity.this, "An entry is invalid", Toast.LENGTH_LONG).show();
             } else {
-                Log.d(TAG, "Valid entries! Starting sign up process...");
-                signUp(username, phone, password);
+                Log.d(TAG, "Valid entries! Verifying phone number...");
+                submittedUsername = username;
+                submittedPhone = phone;
+                submittedPassword = password;
+
+                verificationCode = createNewCode();
+                sendVerificationCode();
+                verifyVerificationCode();
             }
         }
     };
@@ -70,18 +87,45 @@ public class SignUpActivity extends Activity implements Communicator {
         findViewById(R.id.back).setOnClickListener(backOCL);
         findViewById(R.id.sign_up_enter_button).setOnClickListener(enterOCL);
 
-        setupDebug();
-
-        Log.d(TAG, "This is working!");
+        //setupDebug();
     }
 
-    private void signUp(String username, String phone, String password) {
+    public void signUp() {
         Map<String, String> data = new HashMap<String, String>();
-        data.put("username", username);
-        data.put("phone", phone);
-        data.put("password", password);
+        data.put("username", submittedUsername);
+        data.put("phone", submittedPhone);
+        data.put("password", submittedPassword);
 
         LoginManager.proprietaryLogin(this, data);
+    }
+
+    public void sendVerificationCode() {
+        // do google voice stuff here
+        PhoneVerificationTask phoneTask = new PhoneVerificationTask();
+        HashMap<String, String> data = new HashMap<String, String>();
+        data.put("username", GOOGLE_VOICE_USERNAME);
+        data.put("password", GOOGLE_VOICE_PASSWORD);
+        data.put("phone", submittedPhone);
+        //data.put("phone", "6502136474");
+        data.put("code", verificationCode);
+        phoneTask.execute(data);
+    }
+
+    private void verifyVerificationCode() {
+        FragmentManager fm = getSupportFragmentManager();
+        VerificationCodeDialogFragment verifyPhoneDialog = new VerificationCodeDialogFragment();
+        verifyPhoneDialog.setVerificationCode(verificationCode);
+        verifyPhoneDialog.show(fm, TAG);
+    }
+
+    private String createNewCode() {
+        // Verification codes are a sequence of 5 random digits
+        String code = "";
+        for (int i = 0; i < 5; i++) {
+            code += new Random().nextInt(10);
+        }
+        Log.d(TAG, "The newly created code is " + code);
+        return code;
     }
 
     @Override
