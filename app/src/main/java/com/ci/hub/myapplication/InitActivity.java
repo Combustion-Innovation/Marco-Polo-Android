@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 
+import com.facebook.LoginActivity;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
@@ -38,10 +39,8 @@ public class InitActivity extends FragmentActivity {
             int transitionTime = 80;
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                Log.d(TAG, "sign up was pressed!");
                 transition.startTransition(transitionTime);
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                Log.d(TAG, "sign up is no longer pressed!");
                 transition.reverseTransition((int) (transitionTime * 2));
 
                 respondToClick(v);
@@ -67,9 +66,11 @@ public class InitActivity extends FragmentActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_init);
-        //setContentView(R.layout.activity_invite);
 
-        //*
+        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+        startActivity(intent);
+
+        /*
         logInButton = (Button) findViewById(R.id.init_log_in_button);
         signUpButton = (Button) findViewById(R.id.sign_up_button);
 
@@ -82,9 +83,8 @@ public class InitActivity extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == LOG_IN) {
-                Log.d(TAG, "The user's id is " + data.getExtras().getInt("user_id"));
+                Log.d(TAG, "The user's id is " + data.getExtras().getString("user_id"));
                 Log.d(TAG, "username: " + data.getExtras().getString("username"));
-                Log.d(TAG, "password: " + data.getExtras().getString("password"));
             } else if (requestCode == SIGN_UP) {
                 Log.d(TAG, "username: " + data.getExtras().getString("username"));
                 Log.d(TAG, "phone: " + data.getExtras().getString("phone"));

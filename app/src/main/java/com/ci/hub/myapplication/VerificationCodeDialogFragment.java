@@ -1,9 +1,8 @@
 package com.ci.hub.myapplication;
 
 import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +24,6 @@ import android.widget.Toast;
  */
 public class VerificationCodeDialogFragment extends DialogFragment {
     public static final String TAG = "VerificationCodeDialogFragment";
-
-    private String verificationCode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,14 +50,10 @@ public class VerificationCodeDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 String code = ((EditText) view.findViewById(R.id.verification_code_field)).getText().toString();
-                if (code.length() < 5) {    // if code is too short
-                    Toast.makeText(getActivity(), "The verification code is 5 digits long", Toast.LENGTH_LONG).show();
-                } else if (code.equals(verificationCode)) {  // code is correct
-                    ((SignUpActivity) getActivity()).signUp();
+                if (code.length() == 0) {    // if code is too short
+                    Toast.makeText(getActivity(), "You must enter the verification code", Toast.LENGTH_LONG).show();
                 } else {    // code is false
-                    Log.d(TAG, "verificationCode: " + verificationCode);
-                    Log.d(TAG, "code: " + code);
-                    Toast.makeText(getActivity(), "Incorrect verification code", Toast.LENGTH_LONG).show();
+                    ((SignUpActivity) getActivity()).signUp(code);
                 }
             }
         });
@@ -75,9 +68,5 @@ public class VerificationCodeDialogFragment extends DialogFragment {
         // request a window without the title
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return dialog;
-    }
-
-    public void setVerificationCode(String code) {
-        verificationCode = code;
     }
 }

@@ -12,7 +12,7 @@
     <string name="username_placeholder">Username</string>
     <string name="phone_placeholder">Phone #</string>
     <string name="password_placeholder">Password</string>
-    <string name="log_in_enter">Enter</string>
+    <string name="enter">Enter</string>
     <string name="sign_up_intro">Welcome to Marco Polo!\nCreate an account below.</string>
     <string name="edit_info_title">Edit Information</string>
     <string name="edit_username_placeholder">Change Username</string>
@@ -32,10 +32,16 @@
     <string name="logout">Logout</string>
     <string name="verification_title">Enter your verification code</string>
     <string name="verification_resend_code">Resend Code</string>
-    <string name="verification_cancel">Cancel</string>
-    <string name="verification_submit">Submit</string>
+    <string name="cancel">Cancel</string>
+    <string name="submit">Submit</string>
     <string name="invite_search_bar_placeholder">Find MarcoPolo User</string>
     <string name="share">Share</string>
     <string name="invite">INVITE</string>
+    <string name="forgot_password_dialog_title">FORGOT PASSWORD</string>
+    <string name="forgot_password_dialog_header">Enter your phone number below</string>
+    <string name="edit_information">Edit Information</string>
+    <string name="change_username">Change Username</string>
+    <string name="change_phone">Change Phone</string>
+    <string name="change_password">Change Password</string>
 
 </resources>

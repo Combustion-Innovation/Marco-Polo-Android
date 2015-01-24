@@ -26,6 +26,26 @@
             android:name=".SignUpActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
+        <activity
+            android:name=".EditInfoActivity"
+            android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
+        <activity
+            android:name=".EditUsernameActivity"
+            android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
+        <activity
+            android:name=".EditPhoneActivity"
+            android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
+        <activity
+            android:name=".EditPasswordActivity"
+            android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="0257361ee2daf1e289a717f69894b5cd1ddec965" />

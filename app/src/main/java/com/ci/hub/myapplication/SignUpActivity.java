@@ -10,14 +10,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.ci.generalclasses.loginmanagers.Communicator;
-import com.ci.generalclasses.loginmanagers.LoginManager;
-import com.techventus.server.voice.Voice;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 import static android.view.View.OnClickListener;
 
@@ -27,13 +23,9 @@ import static android.view.View.OnClickListener;
 public class SignUpActivity extends FragmentActivity implements Communicator {
     public static final String TAG = "SignUpActivity";
 
-    private static final String GOOGLE_VOICE_USERNAME = "alex.heritier@gmail.com";
-    private static final String GOOGLE_VOICE_PASSWORD = "majinvegeta";
-
     private String submittedUsername;
     private String submittedPhone;
     private String submittedPassword;
-    private String verificationCode;
 
     private final OnClickListener backOCL = new OnClickListener() {
         @Override
@@ -62,9 +54,8 @@ public class SignUpActivity extends FragmentActivity implements Communicator {
                 submittedPhone = phone;
                 submittedPassword = password;
 
-                verificationCode = createNewCode();
+                openVerificationDialog();
                 sendVerificationCode();
-                verifyVerificationCode();
             }
         }
     };
@@ -74,9 +65,9 @@ public class SignUpActivity extends FragmentActivity implements Communicator {
         EditText phone = ((EditText) findViewById(R.id.sign_up_phone_field));
         EditText password = ((EditText) findViewById(R.id.sign_up_password_field));
 
-        username.setText("my username");
-        phone.setText("(702) 696-9696");
-        password.setText("my password");
+        username.setText("test.username");
+        phone.setText("6502136474");
+        password.setText("test.password");
     }
 
     @Override
@@ -87,45 +78,41 @@ public class SignUpActivity extends FragmentActivity implements Communicator {
         findViewById(R.id.back).setOnClickListener(backOCL);
         findViewById(R.id.sign_up_enter_button).setOnClickListener(enterOCL);
 
-        //setupDebug();
+        setupDebug();
     }
 
-    public void signUp() {
-        Map<String, String> data = new HashMap<String, String>();
+    public void signUp(String code) {
+        PhoneSignupTask phoneSignupTask = new PhoneSignupTask();
+        HashMap<String, String> data = new HashMap<String, String>();
+
+        phoneSignupTask.setActivity(this);
         data.put("username", submittedUsername);
         data.put("phone", submittedPhone);
+        data.put("f_name", "DUMMY_FIRST_NAME");
+        data.put("l_name", "DUMMY_LAST_NAME");
         data.put("password", submittedPassword);
+        data.put("device", "Android");
+        data.put("code", code);
 
-        LoginManager.proprietaryLogin(this, data);
+        phoneSignupTask.execute(data);
     }
 
     public void sendVerificationCode() {
         // do google voice stuff here
-        PhoneVerificationTask phoneTask = new PhoneVerificationTask();
+        SetPhoneForVerificationTask phoneTask = new SetPhoneForVerificationTask();
         HashMap<String, String> data = new HashMap<String, String>();
-        data.put("username", GOOGLE_VOICE_USERNAME);
-        data.put("password", GOOGLE_VOICE_PASSWORD);
+
+        phoneTask.setActivity(this);
+        data.put("username", submittedUsername);
         data.put("phone", submittedPhone);
-        //data.put("phone", "6502136474");
-        data.put("code", verificationCode);
+
         phoneTask.execute(data);
     }
 
-    private void verifyVerificationCode() {
+    private void openVerificationDialog() {
         FragmentManager fm = getSupportFragmentManager();
         VerificationCodeDialogFragment verifyPhoneDialog = new VerificationCodeDialogFragment();
-        verifyPhoneDialog.setVerificationCode(verificationCode);
         verifyPhoneDialog.show(fm, TAG);
-    }
-
-    private String createNewCode() {
-        // Verification codes are a sequence of 5 random digits
-        String code = "";
-        for (int i = 0; i < 5; i++) {
-            code += new Random().nextInt(10);
-        }
-        Log.d(TAG, "The newly created code is " + code);
-        return code;
     }
 
     @Override

@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@color/blue"
     android:orientation="vertical">
-    
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -19,61 +19,54 @@
             android:textColor="@color/white" />
 
         <Button
-            android:id="@+id/forgot_password"
+            android:id="@+id/edit_info_title"
             android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@+id/back"
+            android:layout_centerInParent="true"
             android:gravity="center"
             android:background="@null"
-            android:text="@string/forgot_password"
-            android:textSize="15dp"
+            android:text="@string/edit_information"
+            android:textSize="20sp"
             android:textColor="@color/white" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="150dp"
         android:layout_centerVertical="true"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/log_in_username_field"
+        <Button
+            android:id="@+id/edit_info_username_button"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:gravity="center"
-            android:hint="@string/username_placeholder"
+            android:text="@string/change_username"
             android:textColorHint="@color/white"
             android:textColor="@color/white"
-            android:background="@color/green"/>
-
-        <EditText
-            android:id="@+id/log_in_password_field"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:hint="@string/password_placeholder"
-            android:textColorHint="@color/white"
-            android:textColor="@color/white"
-            android:background="@color/dark_green"
-            android:password="true" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true">
+            android:background="@drawable/darkening_green" />
 
         <Button
-            android:id="@+id/log_in_enter_button"
+            android:id="@+id/edit_info_phone_button"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/darkening_green"
-            android:text="@string/enter"
-            android:textSize="40dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/edit_info_username_button"
+            android:gravity="center"
+            android:text="@string/change_phone"
+            android:textColorHint="@color/white"
             android:textColor="@color/white"
-            />
-    </RelativeLayout>
+            android:background="@drawable/darkening_dark_green" />
 
+        <Button
+            android:id="@+id/edit_info_password_button"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/edit_info_phone_button"
+            android:gravity="center"
+            android:text="@string/change_password"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:background="@drawable/darkening_green" />
+    </RelativeLayout>
 </RelativeLayout>
