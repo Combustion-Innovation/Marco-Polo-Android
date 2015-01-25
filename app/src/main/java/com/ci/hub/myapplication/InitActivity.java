@@ -16,6 +16,8 @@ import com.facebook.LoginActivity;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
+import org.json.JSONObject;
+
 import io.fabric.sdk.android.Fabric;
 
 
@@ -28,9 +30,6 @@ public class InitActivity extends FragmentActivity {
 
     private static final int LOG_IN = 0;
     private static final int SIGN_UP = 1;
-
-    private Button logInButton;
-    private Button signUpButton;
 
     private OnTouchListener buttonOTL = new OnTouchListener() {
         @Override
@@ -67,12 +66,37 @@ public class InitActivity extends FragmentActivity {
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_init);
 
-        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+        // FOR DEBUGGING ONLY
+        String user_data;
+        try {
+            JSONObject user_data_json = new JSONObject();
+            user_data_json.put("user_id", "50");
+            user_data_json.put("username", "alex.heritier");
+            user_data_json.put("f_name", "");
+            user_data_json.put("l_name", "");
+            user_data_json.put("email", "");
+            user_data_json.put("phone_number", "6502136474");
+            user_data_json.put("first_login", "2015-01-14 22:48:19");
+            user_data_json.put("device", "iPhone");
+            user_data_json.put("is_logged_in", "");
+            user_data_json.put("picture", "");
+            user_data_json.put("push_notification", "1");
+            user_data_json.put("unit", "1");
+            user_data_json.put("push_key", "yes");
+            user_data = user_data_json.toString();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            System.exit(1);
+            return;
+        }
+
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("user_data", user_data);
         startActivity(intent);
 
         /*
-        logInButton = (Button) findViewById(R.id.init_log_in_button);
-        signUpButton = (Button) findViewById(R.id.sign_up_button);
+        Button logInButton = (Button) findViewById(R.id.init_log_in_button);
+        Button signUpButton = (Button) findViewById(R.id.sign_up_button);
 
         logInButton.setOnTouchListener(buttonOTL);
         signUpButton.setOnTouchListener(buttonOTL);
@@ -83,15 +107,20 @@ public class InitActivity extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == LOG_IN) {
-                Log.d(TAG, "The user's id is " + data.getExtras().getString("user_id"));
-                Log.d(TAG, "username: " + data.getExtras().getString("username"));
+                String user_data = data.getExtras().getString("user_data");
+                Log.d(TAG, user_data);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("user_data", user_data);
+                startActivity(intent);
             } else if (requestCode == SIGN_UP) {
-                Log.d(TAG, "username: " + data.getExtras().getString("username"));
-                Log.d(TAG, "phone: " + data.getExtras().getString("phone"));
-                Log.d(TAG, "password: " + data.getExtras().getString("password"));
+                String user_data = data.getExtras().getString("user_data");
+                Log.d(TAG, user_data);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("user_data", user_data);
+                startActivity(intent);
             }
         } else {
-            Log.d(TAG, "There was an error with the intent");
+            Log.d(TAG, "There was an error with the intent.");
         }
     }
 

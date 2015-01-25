@@ -8,6 +8,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 
+import com.ci.generalclasses.loginmanagers.Communicator;
+
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -18,7 +20,7 @@ import static android.view.View.OnTouchListener;
 /**
  * Created by Alex on 1/18/15.
  */
-public class LogInActivity extends Activity {
+public class LogInActivity extends Activity implements Communicator {
     public static final String TAG = "LogInActivity";
 
     private OnClickListener backOCL = new OnClickListener() {
@@ -77,36 +79,19 @@ public class LogInActivity extends Activity {
         phoneLoginTask.execute(data);
     }
 
-    public void returnData(JSONObject result) {
-        Intent intent = getIntent();
-        try {
-            intent.putExtra("login_data", result.getString("user_id"));
-            intent.putExtra("username", result.getString("username"));
-            intent.putExtra("f_name", result.getString("f_name"));
-            intent.putExtra("l_name", result.getString("l_name"));
-            intent.putExtra("email", result.getString("email"));
-            intent.putExtra("phone_number", result.getString("phone_number"));
-            intent.putExtra("first_login", result.getString("first_login"));
-            intent.putExtra("device", result.getString("device"));
-            intent.putExtra("is_logged_in", result.getString("is_logged_in"));
-            intent.putExtra("picture", result.getString("picture"));
-            intent.putExtra("push_notification", result.getString("push_notification"));
-            intent.putExtra("unit", result.getString("unit"));
-            intent.putExtra("push_key", result.getString("push_key"));
-
-            setResult(RESULT_OK, intent);
-            finish();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-    }
-
     private String getUsername() {
         return ((EditText) findViewById(R.id.log_in_username_field)).getText().toString();
     }
 
     private String getPassword() {
         return ((EditText) findViewById(R.id.log_in_password_field)).getText().toString();
+    }
+
+    @Override
+    public void gotResponse(JSONObject result) {
+        Intent intent = getIntent();
+        intent.putExtra("user_data", result.toString());
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }

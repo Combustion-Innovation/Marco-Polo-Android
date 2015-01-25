@@ -52,8 +52,8 @@ public class VerificationCodeDialogFragment extends DialogFragment {
                 String code = ((EditText) view.findViewById(R.id.verification_code_field)).getText().toString();
                 if (code.length() == 0) {    // if code is too short
                     Toast.makeText(getActivity(), "You must enter the verification code", Toast.LENGTH_LONG).show();
-                } else {    // code is false
-                    ((SignUpActivity) getActivity()).signUp(code);
+                } else {
+                    ((VerificationCodeCallback) getActivity()).onVerification(code);
                 }
             }
         });

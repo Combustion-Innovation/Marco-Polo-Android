@@ -43,5 +43,8 @@
     <string name="change_username">Change Username</string>
     <string name="change_phone">Change Phone</string>
     <string name="change_password">Change Password</string>
+    <string name="old_password">Old Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
 
 </resources>

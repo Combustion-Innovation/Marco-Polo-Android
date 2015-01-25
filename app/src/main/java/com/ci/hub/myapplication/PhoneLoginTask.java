@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.facebook.LoginActivity;
+import com.ci.generalclasses.loginmanagers.Communicator;
 
 import org.json.JSONObject;
 
@@ -19,7 +19,7 @@ public class PhoneLoginTask extends AsyncTask<HashMap<String, String>, String, J
 
     private static final String PHONE_LOGIN_URL = "http://combustionlaboratory.com/marco/php/phoneLogin.php";
 
-    private LogInActivity activity;
+    private Activity activity;
 
     @Override
     protected JSONObject doInBackground(HashMap<String, String>... params) {
@@ -52,11 +52,11 @@ public class PhoneLoginTask extends AsyncTask<HashMap<String, String>, String, J
             Toast.makeText(activity, "The username / password combination is incorrect.", Toast.LENGTH_LONG).show();
         } else if (status.equals("one")) {
             Toast.makeText(activity, "Logged in!", Toast.LENGTH_SHORT).show();
-            activity.returnData(result);
+            ((Communicator)activity).gotResponse(result);
         }
     }
 
-    public void setActivity(LogInActivity activity) {
+    public void setActivity(Activity activity) {
         this.activity = activity;
     }
 }

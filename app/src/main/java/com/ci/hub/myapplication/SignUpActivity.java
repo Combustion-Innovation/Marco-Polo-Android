@@ -20,7 +20,7 @@ import static android.view.View.OnClickListener;
 /**
  * Created by Alex on 1/18/15.
  */
-public class SignUpActivity extends FragmentActivity implements Communicator {
+public class SignUpActivity extends FragmentActivity implements Communicator, VerificationCodeCallback {
     public static final String TAG = "SignUpActivity";
 
     private String submittedUsername;
@@ -81,22 +81,6 @@ public class SignUpActivity extends FragmentActivity implements Communicator {
         setupDebug();
     }
 
-    public void signUp(String code) {
-        PhoneSignupTask phoneSignupTask = new PhoneSignupTask();
-        HashMap<String, String> data = new HashMap<String, String>();
-
-        phoneSignupTask.setActivity(this);
-        data.put("username", submittedUsername);
-        data.put("phone", submittedPhone);
-        data.put("f_name", "DUMMY_FIRST_NAME");
-        data.put("l_name", "DUMMY_LAST_NAME");
-        data.put("password", submittedPassword);
-        data.put("device", "Android");
-        data.put("code", code);
-
-        phoneSignupTask.execute(data);
-    }
-
     public void sendVerificationCode() {
         // do google voice stuff here
         SetPhoneForVerificationTask phoneTask = new SetPhoneForVerificationTask();
@@ -117,24 +101,36 @@ public class SignUpActivity extends FragmentActivity implements Communicator {
 
     @Override
     public void gotResponse(JSONObject s) {
-        String username, phone, password;
         Intent intent = getIntent();
+        JSONObject form;
         try {
             Log.d(TAG, s.toString(4));
-            JSONObject form = (JSONObject) s.get("form");
-            username = form.getString("username");
-            phone = form.getString("phone");
-            password = form.getString("password");
+            form = (JSONObject) s.get("form");
         } catch (Exception e) {
             e.printStackTrace();
             setResult(RESULT_CANCELED, intent);
             finish();
             return;
         }
-        intent.putExtra("username", username);
-        intent.putExtra("phone", phone);
-        intent.putExtra("password", password);
+        intent.putExtra("user_data", form.toString());
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    public void onVerification(String code) {
+        PhoneSignupTask phoneSignupTask = new PhoneSignupTask();
+        HashMap<String, String> data = new HashMap<String, String>();
+
+        phoneSignupTask.setActivity(this);
+        data.put("username", submittedUsername);
+        data.put("phone", submittedPhone);
+        data.put("f_name", "DUMMY_FIRST_NAME");
+        data.put("l_name", "DUMMY_LAST_NAME");
+        data.put("password", submittedPassword);
+        data.put("device", "Android");
+        data.put("code", code);
+
+        phoneSignupTask.execute(data);
     }
 }

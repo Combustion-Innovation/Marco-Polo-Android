@@ -20,6 +20,8 @@ public class SettingsActivity extends Activity {
         }
     };
 
+    private String user_data;
+
     private View.OnTouchListener editInfoOTL = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -31,6 +33,7 @@ public class SettingsActivity extends Activity {
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
                 transition.reverseTransition((int) (transitionTime * 2));
                 Intent intent = new Intent(getApplicationContext(), EditInfoActivity.class);
+                intent.putExtra("user_data", user_data);
                 startActivity(intent);
             }
             return true;
@@ -42,7 +45,9 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        user_data = getIntent().getExtras().getString("user_data");
+
         findViewById(R.id.back).setOnClickListener(backOCL);
-        findViewById(R.id.edit_info_button).setOnTouchListener(editInfoOTL);
+        findViewById(R.id.settings_edit_info_button).setOnTouchListener(editInfoOTL);
     }
 }
