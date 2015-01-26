@@ -26,6 +26,8 @@ public class ShareActivity extends Activity {
 
         user_data = getIntent().getExtras().getString("user_data");
 
+        // TODO add people from user's contact list
+
         findViewById(R.id.back).setOnClickListener(backOCL);
     }
 }

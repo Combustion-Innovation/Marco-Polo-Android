@@ -43,14 +43,12 @@ public class GetListOfMarcoPolosTask extends AsyncTask<HashMap<String, String>, 
 
         JSONObject results;
         try {
-            Log.d(TAG, result.toString(4));
             results = result.getJSONArray("results").getJSONObject(0);
+            Log.d(TAG, results.toString(4));
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return;
         }
-
-        // TODO do something with the polos, marcos, and friends
         ((Communicator) activity).gotResponse(results);
     }
 
