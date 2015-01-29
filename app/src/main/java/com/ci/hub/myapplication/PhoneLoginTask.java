@@ -5,8 +5,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ci.generalclasses.loginmanagers.Communicator;
-
 import org.json.JSONObject;
 
 import java.util.HashMap;

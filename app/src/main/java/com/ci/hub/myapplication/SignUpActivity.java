@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.ci.generalclasses.loginmanagers.Communicator;
-
 import org.json.JSONObject;
 
 import java.util.HashMap;

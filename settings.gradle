@@ -1,1 +1,1 @@
-include ':app', ':loginManager', ':facebook'
+include ':app', ':ContactManager'

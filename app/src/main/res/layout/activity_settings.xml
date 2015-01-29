@@ -189,7 +189,7 @@
         android:layout_alignParentBottom="true">
 
         <Button
-            android:id="@+id/log_in_enter_button"
+            android:id="@+id/settings_logout_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/darkening_red"

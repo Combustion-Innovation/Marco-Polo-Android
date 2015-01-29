@@ -32,17 +32,6 @@ public class EditPhoneActivity extends FragmentActivity implements VerificationC
         }
     };
 
-    /*
-    private View.OnClickListener enterOTL = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            EditText phoneField = (EditText) findViewById(R.id.edit_phone_phone_field);
-            new_phone_number = phoneField.getText().toString();
-            openVerificationDialog();
-            sendVerificationCode();
-        }
-    };
-    */
     private View.OnTouchListener enterOTL = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -77,7 +66,6 @@ public class EditPhoneActivity extends FragmentActivity implements VerificationC
             System.exit(1);
         }
 
-        // TODO add functionality
         // set the phone field to the user's phone number
         EditText phoneField = (EditText) findViewById(R.id.edit_phone_phone_field);
         phoneField.setText(phone_number);
@@ -92,22 +80,23 @@ public class EditPhoneActivity extends FragmentActivity implements VerificationC
         verificationCodeDialog.show(fm, TAG);
     }
 
+    // TODO talk to Luis and fix whatever is wrong with this
     private void sendVerificationCode() {
         AsyncTask<Void, Void, JSONObject> userPhoneChangeTask;
-        final String EDIT_PHONE_VERIFICATION_URL = "http://combustionlaboratory.com/marco/php/userPhoneChange.php";
+        final String URL = "http://combustionlaboratory.com/marco/php/sendVerificationNewNumber.php";
         final HashMap<String, String> data = new HashMap<String, String>();
 
         data.put("user_id", "50");
-        data.put("phone", "6502136474");
+        data.put("phone", "6502136475");
 
         userPhoneChangeTask = new AsyncTask<Void, Void, JSONObject>() {
-            private static final String TAG = "UserPhoneChangeTask";
+            private static final String TAG = "SendVerificationNewNumberTask";
 
             @Override
             protected JSONObject doInBackground(Void... params) {
                 JSONObject result;
                 try {
-                    result = ServerTaskUtility.sendData(EDIT_PHONE_VERIFICATION_URL, data);
+                    result = ServerTaskUtility.sendData(URL, data);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -138,7 +127,7 @@ public class EditPhoneActivity extends FragmentActivity implements VerificationC
                 } else if (status.equals("two")) {
                     Toast.makeText(EditPhoneActivity.this, "This phone number already exists.", Toast.LENGTH_LONG).show();
                 } else if (status.equals("one")) {
-                    Toast.makeText(EditPhoneActivity.this, "A confirmation code has been sent to the number.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditPhoneActivity.this, "A confirmation code has been sent to the number.", Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -148,7 +137,7 @@ public class EditPhoneActivity extends FragmentActivity implements VerificationC
     @Override
     public void onVerification(String code) {
         AsyncTask<Void, Void, JSONObject> sendVerificationNewNumberTask;
-        final String EDIT_PHONE_URL = "http://combustionlaboratory.com/marco/php/sendVerificationNewNumber.php";
+        final String URL = "http://combustionlaboratory.com/marco/php/userPhoneChange.php";
         final HashMap<String, String> data = new HashMap<String, String>();
 
         data.put("user_id", user_id);
@@ -156,13 +145,13 @@ public class EditPhoneActivity extends FragmentActivity implements VerificationC
         data.put("code", code);
 
         sendVerificationNewNumberTask = new AsyncTask<Void, Void, JSONObject>() {
-            private static final String TAG = "SendVerificationNewNumberTask";
+            private static final String TAG = "UserPhoneChangeTask";
 
             @Override
             protected JSONObject doInBackground(Void... params) {
                 JSONObject result;
                 try {
-                    result = ServerTaskUtility.sendData(EDIT_PHONE_URL, data);
+                    result = ServerTaskUtility.sendData(URL, data);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;

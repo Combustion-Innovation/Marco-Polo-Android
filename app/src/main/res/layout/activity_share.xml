@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:background="@color/blue">
 
     <RelativeLayout
@@ -13,7 +15,7 @@
         <Button
             android:id="@+id/back"
             android:layout_width="40dp"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
@@ -24,6 +26,7 @@
             android:textColor="@color/white" />
 
         <EditText
+            android:id="@+id/share_search_field"
             android:layout_width="250dp"
             android:layout_height="30dp"
             android:layout_centerInParent="true"
@@ -35,65 +38,81 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/dark_yellow">
+        android:background="@color/dark_yellow"
+        android:animateLayoutChanges="true"
+        android:visibility="visible"
+        android:clickable="true">
 
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/share_share_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_centerInParent="true"
             android:background="@null"
             android:text="@string/share"
-            android:textSize="40dp"
+            android:textSize="40sp"
             android:textColor="@color/white"/>
+
+        <LinearLayout
+            android:id="@+id/share_social_root"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:animateLayoutChanges="true"
+            android:visibility="invisible"
+            android:clickable="true">
+
+            <ImageButton
+                android:id="@+id/share_facebook_button"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:src="@drawable/transition_facebook"
+                android:clickable="true"
+                android:scaleType="fitCenter"
+                android:textSize="30sp"
+                android:textColor="@color/white"/>
+
+            <ImageButton
+                android:id="@+id/share_twitter_button"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:src="@drawable/transition_twitter"
+                android:clickable="true"
+                android:scaleType="fitCenter"
+                android:textSize="30sp"
+                android:textColor="@color/white"/>
+
+            <ImageButton
+                android:id="@+id/share_ellipsis_button"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33"
+                android:layout_gravity="center"
+                android:background="@null"
+                android:src="@drawable/transition_ellipsis"
+                android:clickable="true"
+                android:scaleType="fitCenter"
+                android:textSize="30sp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
     </RelativeLayout>
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/share_contact_root"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@color/green">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:background="@null"
-                android:text="Akash Gupta"
-                android:textColor="@color/white"
-                android:textSize="30dp"/>
-
-            <TextView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:gravity="center"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="A"
-                android:textColor="@color/white"
-                android:textSize="15dp"/>
-
-            <TextView
-                android:layout_width="80dp"
-                android:layout_height="20dp"
-                android:gravity="center"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentBottom="true"
-                android:text="(650) 391-8050"
-                android:textColor="@color/white"
-                android:textSize="10dp"/>
-
-            <TextView
-                android:layout_width="80dp"
-                android:layout_height="20dp"
-                android:gravity="center_horizontal"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:text="@string/invite"
-                android:textColor="@color/white"
-                android:textSize="15dp"/>
-        </RelativeLayout>
-    </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

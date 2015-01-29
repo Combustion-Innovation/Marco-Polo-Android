@@ -46,8 +46,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.2'
-    compile project(':loginManager')
-    compile('com.twitter.sdk.android:twitter:1.1.1@aar') {
-        transitive = true;
-    }
+    compile project(':ContactManager')
 }

@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 
+import java.util.HashMap;
+
 /**
  * Created by Alex on 1/23/15.
  */
@@ -27,7 +29,7 @@ import android.widget.EditText;
 
 public class ForgotPasswordActivity extends Activity {
 
-    public static final String TAG = "ForgotPasswordDialogFragment";
+    public static final String TAG = "ForgotPasswordActivity";
 
     private View.OnClickListener backOCL = new View.OnClickListener() {
         @Override
@@ -46,8 +48,11 @@ public class ForgotPasswordActivity extends Activity {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 transition.startTransition(TRANSITION_TIME);
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                EditText usernameField = (EditText) findViewById(R.id.forgot_password_username_field);
+                EditText phoneField = (EditText) findViewById(R.id.forgot_password_phone_field);
+
                 transition.reverseTransition((int) (TRANSITION_TIME * 2));
-                resetPassword();
+                resetPassword(usernameField.getText().toString(), phoneField.getText().toString());
             }
             return true;
         }
@@ -62,7 +67,14 @@ public class ForgotPasswordActivity extends Activity {
         findViewById(R.id.forgot_password_enter_button).setOnTouchListener(enterOTL);
     }
 
-    private void resetPassword() {
-        // TODO use a task to reset the password
+    private void resetPassword(String username, String phone) {
+        ForgotPWTask forgotPWTask = new ForgotPWTask();
+        HashMap<String, String> data = new HashMap<String, String>();
+
+        forgotPWTask.setActivity(this);
+        data.put("username", username);
+        data.put("phone", phone);
+
+        forgotPWTask.execute(data);
     }
 }

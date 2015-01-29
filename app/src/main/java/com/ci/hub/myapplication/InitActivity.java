@@ -12,13 +12,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 
-import com.facebook.LoginActivity;
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-
 import org.json.JSONObject;
-
-import io.fabric.sdk.android.Fabric;
 
 
 public class InitActivity extends FragmentActivity {
@@ -61,9 +55,6 @@ public class InitActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // twitter stuff
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_init);
 
         // FOR DEBUGGING ONLY
@@ -90,11 +81,13 @@ public class InitActivity extends FragmentActivity {
             return;
         }
 
+        //*
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra("user_data", user_data);
         startActivity(intent);
+        //*/
 
-        /*
+        //*
         Button logInButton = (Button) findViewById(R.id.init_log_in_button);
         Button signUpButton = (Button) findViewById(R.id.sign_up_button);
 

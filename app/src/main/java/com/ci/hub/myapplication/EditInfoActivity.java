@@ -36,7 +36,7 @@ public class EditInfoActivity extends Activity {
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
                 transition.reverseTransition(transitionTime * 2);
                 Intent intent = new Intent(getApplicationContext(), EditUsernameActivity.class);
-                intent.putExtra("user_data", user_data);   // TODO make this dynamic
+                intent.putExtra("user_data", user_data);
                 startActivity(intent);
             }
             return true;
@@ -54,7 +54,7 @@ public class EditInfoActivity extends Activity {
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
                 transition.reverseTransition(transitionTime * 2);
                 Intent intent = new Intent(getApplicationContext(), EditPhoneActivity.class);
-                intent.putExtra("user_data", user_data);   // TODO make this dynamic
+                intent.putExtra("user_data", user_data);
                 startActivity(intent);
             }
             return true;
@@ -72,7 +72,7 @@ public class EditInfoActivity extends Activity {
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
                 transition.reverseTransition(transitionTime * 2);
                 Intent intent = new Intent(getApplicationContext(), EditPasswordActivity.class);
-                intent.putExtra("user_data", user_data);   // TODO make this dynamic
+                intent.putExtra("user_data", user_data);
                 startActivity(intent);
             }
             return true;

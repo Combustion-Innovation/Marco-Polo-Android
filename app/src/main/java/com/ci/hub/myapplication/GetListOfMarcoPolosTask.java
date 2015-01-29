@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.ci.generalclasses.loginmanagers.Communicator;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;

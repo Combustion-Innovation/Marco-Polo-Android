@@ -32,7 +32,7 @@
             android:layout_alignParentTop="true"
             android:gravity="center"
             android:inputType="phone"
-            android:text=""
+            android:hint="@string/new_phone"
             android:textColorHint="@color/white"
             android:textColor="@color/white"
             android:background="@color/green"/>

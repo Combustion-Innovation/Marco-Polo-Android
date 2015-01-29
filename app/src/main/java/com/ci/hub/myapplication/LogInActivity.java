@@ -8,8 +8,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 
-import com.ci.generalclasses.loginmanagers.Communicator;
-
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -37,7 +35,7 @@ public class LogInActivity extends Activity implements Communicator {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             TransitionDrawable transition = (TransitionDrawable) v.getBackground();
-            int transitionTime = 80;
+            final int transitionTime = 80;
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 transition.startTransition(transitionTime);

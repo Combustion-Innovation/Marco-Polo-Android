@@ -40,6 +40,22 @@ public class SettingsActivity extends Activity {
         }
     };
 
+    private View.OnTouchListener logoutOTL = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            TransitionDrawable transition = (TransitionDrawable) v.getBackground();
+            final int transitionTime = 0;
+
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                transition.startTransition(transitionTime);
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                transition.reverseTransition((int) (transitionTime * 2));
+                logout();
+            }
+            return true;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,5 +65,12 @@ public class SettingsActivity extends Activity {
 
         findViewById(R.id.back).setOnClickListener(backOCL);
         findViewById(R.id.settings_edit_info_button).setOnTouchListener(editInfoOTL);
+        findViewById(R.id.settings_logout_button).setOnTouchListener(logoutOTL);
+    }
+
+    private void logout() {
+        Intent intent = new Intent(getApplicationContext(), InitActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

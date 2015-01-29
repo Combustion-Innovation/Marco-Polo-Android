@@ -70,7 +70,6 @@ public class EditPasswordActivity extends Activity {
             System.exit(1);
         }
 
-        // TODO add functionality
         findViewById(R.id.back).setOnClickListener(backOCL);
         findViewById(R.id.edit_password_enter_button).setOnTouchListener(enterOTL);
     }

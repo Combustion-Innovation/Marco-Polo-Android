@@ -59,7 +59,6 @@ public class EditUsernameActivity extends Activity {
             System.exit(1);
         }
 
-        // TODO add functionality
         // set the username field to the user's username
         EditText usernameField = (EditText) findViewById(R.id.edit_username_username_field);
         usernameField.setText(username);
