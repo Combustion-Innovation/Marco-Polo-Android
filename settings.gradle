@@ -1,1 +1,1 @@
-include ':app', ':ContactManager'
+include ':app', ':ContactManager', ':swipelayout'

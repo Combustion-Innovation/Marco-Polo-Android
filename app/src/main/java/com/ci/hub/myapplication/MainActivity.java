@@ -4,15 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -29,6 +34,7 @@ public class MainActivity extends Activity implements Communicator {
     private JSONArray polos;
     private JSONObject friends;
     private JSONObject contacts;
+    private ArrayList<JSONObject> flattenedCellData;   // polos + marcos + flattened friends all together
 
     private View.OnClickListener shareOCL = new View.OnClickListener() {
         @Override
@@ -54,6 +60,7 @@ public class MainActivity extends Activity implements Communicator {
         setContentView(R.layout.activity_main);
 
         user_data = getIntent().getExtras().getString("user_data");
+        flattenedCellData = new ArrayList<JSONObject>();
 
         getMarcoPoloData();
 
@@ -81,151 +88,104 @@ public class MainActivity extends Activity implements Communicator {
         getListOfMarcoPolosTask.execute(data);
     }
 
-    private void onDataRetrieved() {
-        populateView();
+    private void sendPolo(JSONObject currentUser, JSONObject clickedUser) {
+        PoloWasClickedTask poloWasClickedTask = new PoloWasClickedTask();
+        HashMap<String, String> data = new HashMap<String, String>();
+        String  user_id,
+                sendee_id,
+                marco_id,
+                lat,
+                lng;
+        try {
+            user_id = currentUser.getString("user_id");
+            sendee_id = clickedUser.getString("user_id");
+            marco_id = "69";    // TODO not sure where to find this value
+            lat = "147"; // TODO get the real value of lat
+            lng = "123"; // TODO get the real value of lng
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            return;
+        }
+
+        poloWasClickedTask.setCommunicator(MainActivity.this);
+        data.put("user_id", user_id);
+        data.put("sendee_id", sendee_id);
+        data.put("marco_id", marco_id);
+        data.put("lat", lat);
+        data.put("lng", lng);
+        poloWasClickedTask.execute(data);
     }
 
-    // TODO add event listeners to the MarcoPoloBoxes and add sending marco and polo functionality
+    private void sendMarco(JSONObject currentUser, JSONObject clickedUser) {
+        MarcoWasClickedTask marcoWasClickedTask = new MarcoWasClickedTask();
+        HashMap<String, String> data = new HashMap<String, String>();
+        String  user_id,
+                sendee_id;
+        try {
+            JSONObject user_data_json = new JSONObject(user_data);
+            user_id = user_data_json.getString("user_id");
+            sendee_id = clickedUser.getString("user_id");
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            return;
+        }
+
+        marcoWasClickedTask.setCommunicator(MainActivity.this);
+        data.put("user_id", user_id);
+        data.put("sendee_id", sendee_id);
+        marcoWasClickedTask.execute(data);
+    }
+
     private void populateView() {
-        LinearLayout root = (LinearLayout) findViewById(R.id.main_marcopolo_box_root);
-        int root_index_offset = 0;
+        // TODO update this to use a list view adapter
+        // TODO add an onItemClickListener to send marcos/polos
 
-        // add marcos to view
-        for (int i = 0; i < marcos.length(); i++) {
-            View marcoPoloBox;
-            try {
-                marcoPoloBox = createMarcoBox(root, marcos.getJSONObject(i));
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                return;
-            }
-
-            // every other marco is a darker blue
-            if (i % 2 == 0) {
-                marcoPoloBox.setBackgroundColor(getResources().getColor(R.color.blue));
-            } else {
-                marcoPoloBox.setBackgroundColor(getResources().getColor(R.color.dark_blue));
-            }
-            root.addView(marcoPoloBox, root_index_offset + i);
-        }
-        root_index_offset += marcos.length();
-
-        // add polos to view
-        for (int i = 0; i < polos.length(); i++) {
-            View marcoPoloBox;
-            try {
-                marcoPoloBox = createPoloBox(root, polos.getJSONObject(i));
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                return;
-            }
-
-            // every other polo is a darker blue
-            if (i % 2 == 0) {
-                marcoPoloBox.setBackgroundColor(getResources().getColor(R.color.blue));
-            } else {
-                marcoPoloBox.setBackgroundColor(getResources().getColor(R.color.dark_blue));
-            }
-            root.addView(marcoPoloBox, root_index_offset + i);
+        try {
+            Log.d(TAG, new JSONObject(user_data).toString(4));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
         }
 
-        // add friends to view
-        int friend_count = 0;   // this is needed for the view offset
-        for (char initial = 'A'; initial < 'Z'; initial++) {    // loop through initials
-            JSONArray initialGroup;
-            try {
-                initialGroup = friends.getJSONArray(initial + "");
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                return;
-            }
-            for (int i = 0; i < initialGroup.length(); i++, friend_count++) {
-                View marcoPoloBox;
+        final MainListViewAdapter adapter = new MainListViewAdapter(getApplicationContext(), flattenedCellData);
+        final ListView listView = (ListView) findViewById(R.id.main_list_view);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // determine what type the cell is from the position
+                String type, name;
+                JSONObject currentUser, clickedUser;
+                if (position < polos.length()) {
+                    // polos are added first
+                    type = "POLO";
+                } else if (position < polos.length() + marcos.length()) {
+                    // if the position is greater than the # of polos, it becomes a marco
+                    type = "MARCO";
+                } else {
+                    // if the position is greater than the # of polos and marcos, it becomes a friend
+                    type = ((TextView) view.findViewById(R.id.marcopolo_cell_bottom_right)).getText().toString();
+                }
+
                 try {
-                    marcoPoloBox = createFriendBox(root, initialGroup.getJSONObject(i));
+                    currentUser = new JSONObject(user_data);
+                    clickedUser = flattenedCellData.get(position);
+                    name = clickedUser.getString("username");
                 } catch (Exception e) {
                     e.printStackTrace(System.err);
                     return;
                 }
-                if (i == 0) {   // the first friend of the initialGroup gets the letter
-                    TextView letter = (TextView) marcoPoloBox.findViewById(R.id.marcopolo_box_letter);
-                    letter.setText(initial + "");
-                }
 
-                // every other friend is a lighter green
-                if (friend_count % 2 == 0) {
-                    marcoPoloBox.setBackgroundColor(getResources().getColor(R.color.dark_green));
-                } else {
-                    marcoPoloBox.setBackgroundColor(getResources().getColor(R.color.green));
+                if (type == "POLO") {
+                    sendPolo(currentUser, clickedUser);
+                    Toast.makeText(listView.getContext(), "Poloing " + name + "!", Toast.LENGTH_SHORT).show();
+
+                } else { //if (type == "MARCO") {
+                    sendMarco(currentUser, clickedUser);
+                    Toast.makeText(listView.getContext(), "Marcoing " + name + "!", Toast.LENGTH_SHORT).show();
                 }
-                root.addView(marcoPoloBox, root_index_offset + friend_count);
             }
-        }
-        root_index_offset += friend_count;
-    }
-
-    private View createMarcoBox(LinearLayout root, JSONObject marcoData) {
-        // NE 420 km : 69d ago
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View marcoBox = inflater.inflate(R.layout.layout_marcopolo_box, root, false);
-        Button button = (Button) marcoBox.findViewById(R.id.marcopolo_box_button);
-        TextView letter = (TextView) marcoBox.findViewById(R.id.marcopolo_box_letter);
-        TextView info = (TextView) marcoBox.findViewById(R.id.marcopolo_box_info);
-        TextView type = (TextView) marcoBox.findViewById(R.id.marcopolo_box_type);
-
-        try {
-            button.setText(marcoData.getString("username"));
-            String infoText = marcoData.getString("direction") + " "
-                    + marcoData.getString("distance") + " "
-                    + marcoData.getString("created");
-            info.setText(infoText);
-            type.setText("MARCO");
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            return null;
-        }
-        return marcoBox;
-    }
-
-    private View createPoloBox(LinearLayout root, JSONObject poloData) {
-        // NE 420 km : 69d ago
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View marcoPoloBox = inflater.inflate(R.layout.layout_marcopolo_box, root, false);
-        Button button = (Button) marcoPoloBox.findViewById(R.id.marcopolo_box_button);
-        TextView letter = (TextView) marcoPoloBox.findViewById(R.id.marcopolo_box_letter);
-        TextView info = (TextView) marcoPoloBox.findViewById(R.id.marcopolo_box_info);
-        TextView type = (TextView) marcoPoloBox.findViewById(R.id.marcopolo_box_type);
-
-        try {
-            ;
-            button.setText(poloData.getString("username"));
-            String infoText = poloData.getString("direction") + " "
-                    + poloData.getString("distance") + " "
-                    + poloData.getString("created");
-            info.setText(infoText);
-            type.setText("POLO");
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            return null;
-        }
-        return marcoPoloBox;
-    }
-
-    private View createFriendBox(LinearLayout root, JSONObject friend) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View marcoPoloBox = inflater.inflate(R.layout.layout_marcopolo_box, root, false);
-        Button button = (Button) marcoPoloBox.findViewById(R.id.marcopolo_box_button);
-        TextView letter = (TextView) marcoPoloBox.findViewById(R.id.marcopolo_box_letter);
-        TextView info = (TextView) marcoPoloBox.findViewById(R.id.marcopolo_box_info);
-        TextView type = (TextView) marcoPoloBox.findViewById(R.id.marcopolo_box_type);
-
-        try {
-            button.setText(friend.getString("username"));
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            return null;
-        }
-        return marcoPoloBox;
+        });
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -238,11 +198,31 @@ public class MainActivity extends Activity implements Communicator {
             polos = s.getJSONArray("polos");
             friends = s.getJSONObject("friends");
             contacts = s.getJSONObject("contacts");
+
+            // fill cell_data_array
+            for (int i = 0; i < polos.length(); i++) {
+                JSONObject polo = polos.getJSONObject(i);
+                polo.put("type", "POLO");
+                flattenedCellData.add(polo);
+            }
+            for (int i = 0; i < marcos.length(); i++) {
+                JSONObject marco = marcos.getJSONObject(i);
+                marco.put("type", "MARCO");
+                flattenedCellData.add(marco);
+            }
+            for (char initial = 'A'; initial <= 'Z'; initial++) {
+                JSONArray initialGroup = friends.getJSONArray(initial + "");
+                for (int i = 0; i < initialGroup.length(); i++) {
+                    JSONObject friend = initialGroup.getJSONObject(i);
+                    friend.put("type", "FRIEND");
+                    flattenedCellData.add(friend);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace(System.err);
             return;
         }
 
-        onDataRetrieved();
+        populateView();
     }
 }

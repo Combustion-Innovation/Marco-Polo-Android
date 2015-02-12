@@ -1,5 +1,7 @@
 package com.ci.hub.myapplication;
 
+import android.util.Log;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -61,6 +63,7 @@ public class ServerTaskUtility {
                 stringBuilder.append(bufferedStrChunk);
             }
 
+            //Log.d(TAG, stringBuilder.toString());
             return new JSONObject(stringBuilder.toString());
 
         } catch (ClientProtocolException e) {

@@ -4,15 +4,15 @@
     android:background="@color/blue"
     android:layout_marginBottom="-6dp">
     
-    <LinearLayout
-        android:id="@+id/main_marcopolo_box_root"
+    <ListView
+        android:id="@+id/main_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:orientation="vertical"
         android:padding="0dp">
 
-    </LinearLayout>
+    </ListView>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -44,5 +44,4 @@
             android:background="@null"
             android:src="@drawable/main_settings_button_image"/>
     </RelativeLayout>
-    
 </RelativeLayout>

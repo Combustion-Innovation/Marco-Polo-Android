@@ -7,13 +7,13 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
-import com.ci.hub.contactmanager.ContactManager;
-
-import java.util.Iterator;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Alex on 1/24/15.
@@ -86,8 +86,10 @@ public class ShareActivity extends Activity implements GestureDetector.OnGesture
         twitterButton.setOnTouchListener(socialOTL);
         ellipsisButton.setOnTouchListener(socialOTL);
 
-        // TODO add people from user's contact list
-        // this contact code doesn't work on a real phone
+        populateView();
+
+        // this contact code crashes on a real phone
+        /*
         ContactManager contactManager = new ContactManager(this);
         Iterator<String> iterator = contactManager.getContactsNames().iterator();
         Log.d(TAG, "Start iterating through contacts.");
@@ -95,6 +97,21 @@ public class ShareActivity extends Activity implements GestureDetector.OnGesture
             Log.d(TAG, iterator.next());
         }
         Log.d(TAG, "Stop iterating through contacts.");
+        */
+    }
+
+    private void populateView() {
+        // TODO get contact information and fill the list view with it
+        ShareListViewAdapter adapter = new ShareListViewAdapter(getApplicationContext());
+        final ListView listView = (ListView) findViewById(R.id.share_list_view);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String name = ((TextView)view.findViewById(R.id.marcopolo_cell_center)).getText().toString();
+                Toast.makeText(listView.getContext(), "Inviting " + name + "!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        listView.setAdapter(adapter);
     }
 
     private void toggleSocialButtons() {

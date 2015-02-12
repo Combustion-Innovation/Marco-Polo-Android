@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MarcoPoloCell">
+        <attr name="centerText" format="string" />
+        <attr name="topLeftText" format="string" />
+        <attr name="topRightText" format="string" />
+        <attr name="bottomLeftText" format="string" />
+        <attr name="bottomRightText" format="string" />
+        <attr name="cellType" format="enum">
+            <enum name="marco" value="0" />
+            <enum name="polo" value="1" />
+            <enum name="friend" value="2" />
+            <enum name="contact" value="3" />
+        </attr>
+        <attr name="textColor" format="integer" />
+        <attr name="backgroundColor" format="integer" />
+    </declare-styleable>
+</resources>
