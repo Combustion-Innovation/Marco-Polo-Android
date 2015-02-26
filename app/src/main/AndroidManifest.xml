@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ci.hub.myapplication" >
+    package="com.ci.marcopolo" >
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".InitActivity"
+            android:name="com.ci.marcopolo.InitActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
@@ -21,48 +21,45 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LogInActivity"
+            android:name="com.ci.marcopolo.LogInActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".SignUpActivity"
+            android:name="com.ci.marcopolo.SignUpActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".ForgotPasswordActivity"
+            android:name="com.ci.marcopolo.ForgotPasswordActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="com.ci.marcopolo.MainActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".ShareActivity"
+            android:name="com.ci.marcopolo.ShareActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="com.ci.marcopolo.SettingsActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".EditInfoActivity"
+            android:name="com.ci.marcopolo.EditInfoActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".EditUsernameActivity"
+            android:name="com.ci.marcopolo.EditUsernameActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".EditPhoneActivity"
+            android:name="com.ci.marcopolo.EditPhoneActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
         <activity
-            android:name=".EditPasswordActivity"
+            android:name="com.ci.marcopolo.EditPasswordActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="0257361ee2daf1e289a717f69894b5cd1ddec965" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
