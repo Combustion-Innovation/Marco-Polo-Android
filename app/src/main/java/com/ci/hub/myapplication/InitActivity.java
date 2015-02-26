@@ -17,15 +17,12 @@ import org.json.JSONObject;
 
 
 public class InitActivity extends FragmentActivity {
-
-    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
-    private static final String TWITTER_KEY = "jXkwG4Jbd9OZP01TLXnkMqs6F";
-    private static final String TWITTER_SECRET = "xpqx0c8GSKuImdguIYAOt4oRl4i86m1OF7tshnGbvI4eT0I9Op";
     public static final String TAG = "InitActivity";
 
     private static final int LOG_IN = 0;
     private static final int SIGN_UP = 1;
 
+    // a general OnTouchListener for the login and sign up buttons
     private OnTouchListener buttonOTL = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -45,9 +42,11 @@ public class InitActivity extends FragmentActivity {
 
     private void respondToClick(View v) {
         if (v.getId() == R.id.init_log_in_button) {
+            // if the login button was clicked, open LoginActivity
             Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
             startActivityForResult(intent, LOG_IN);
         } else {
+            // if the sign up button was clicked, open the SignUpActivity
             Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
             startActivityForResult(intent, SIGN_UP);
         }
@@ -57,6 +56,8 @@ public class InitActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
+
+        Log.d(TAG, "Launched MarcoPolo!");
 
         // FOR DEBUGGING ONLY
         String user_data;
@@ -82,36 +83,37 @@ public class InitActivity extends FragmentActivity {
             return;
         }
 
-        //*
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        //* MORE DEBUGGING
+        Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
         intent.putExtra("user_data", user_data);
         startActivity(intent);
+        finish();
         //*/
 
-        //*
         Button logInButton = (Button) findViewById(R.id.init_log_in_button);
         Button signUpButton = (Button) findViewById(R.id.sign_up_button);
 
         logInButton.setOnTouchListener(buttonOTL);
         signUpButton.setOnTouchListener(buttonOTL);
-        //*/
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == LOG_IN) {
-                String user_data = data.getExtras().getString("user_data");
+                String user_data = data.getExtras().getString("user_data"); // get user_data
                 Log.d(TAG, user_data);
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("user_data", user_data);
+                intent.putExtra("user_data", user_data);    // send the user_data to the MainActivity
                 startActivity(intent);
+                finish(); // InitActivity isn't needed anymore
             } else if (requestCode == SIGN_UP) {
-                String user_data = data.getExtras().getString("user_data");
+                String user_data = data.getExtras().getString("user_data"); // get user_data
                 Log.d(TAG, user_data);
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("user_data", user_data);
+                intent.putExtra("user_data", user_data);    // send user_data to the MainActivity
                 startActivity(intent);
+                finish();   // InitActivity isn't needed anymore
             }
         } else {
             Log.d(TAG, "There was an error with the intent.");

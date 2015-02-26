@@ -16,7 +16,7 @@ public class GetListOfMarcoPolosTask extends AsyncTask<HashMap<String, String>, 
 
     private final static String URL = "http://combustionlaboratory.com/marco/php/getListOfMarcoPolos.php?";
 
-    private Activity activity;
+    private Communicator communicator;
 
     @Override
     protected JSONObject doInBackground(HashMap<String, String>... params) {
@@ -46,10 +46,10 @@ public class GetListOfMarcoPolosTask extends AsyncTask<HashMap<String, String>, 
             e.printStackTrace(System.err);
             return;
         }
-        ((Communicator) activity).gotResponse(results);
+        communicator.gotResponse(results, MainActivity.GET_MARCO_POLO_DATA);
     }
 
-    public void setActivity(Activity activity) {
-        this.activity = activity;
+    public void setCommunicator(Communicator communicator) {
+        this.communicator = communicator;
     }
 }

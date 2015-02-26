@@ -15,20 +15,39 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ci.hub.contactmanager.CICallback;
+import com.ci.hub.contactmanager.Contact;
+import com.ci.hub.contactmanager.ContactManager;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Created by Alex on 1/24/15.
  */
-public class ShareActivity extends Activity implements GestureDetector.OnGestureListener {
+public class ShareActivity extends Activity implements GestureDetector.OnGestureListener, Communicator {
     public final static String TAG = "ShareActivity";
 
+    // callback codes
+    public final static int ADD_CONTACTS = 0;
+
+    // data
     private String user_data;
+    private List<Contact> contacts;
+
     private boolean shareButtonActive = true;
+
+    // layout objects
     private GestureDetector gestureDetector;
     private Button shareButton;
     private LinearLayout socialLayout;
     private ImageButton facebookButton;
     private ImageButton twitterButton;
     private ImageButton ellipsisButton;
+    private ListView listView;
 
     private View.OnClickListener backOCL = new View.OnClickListener() {
         @Override
@@ -78,6 +97,7 @@ public class ShareActivity extends Activity implements GestureDetector.OnGesture
         facebookButton = (ImageButton) findViewById(R.id.share_facebook_button);
         twitterButton = (ImageButton) findViewById(R.id.share_twitter_button);
         ellipsisButton = (ImageButton) findViewById(R.id.share_ellipsis_button);
+        listView = (ListView) findViewById(R.id.share_list_view);
 
         // add OTLs for touch gestures
         findViewById(R.id.back).setOnClickListener(backOCL);
@@ -86,32 +106,68 @@ public class ShareActivity extends Activity implements GestureDetector.OnGesture
         twitterButton.setOnTouchListener(socialOTL);
         ellipsisButton.setOnTouchListener(socialOTL);
 
-        populateView();
+        try {
+            ContactManager.setActivity(this);
+            ContactManager.getContacts(new CICallback() {
+                @Override
+                public void onStart(Object o) {
+                    Log.d(TAG, "Start iterating through contacts.");
+                }
 
-        // this contact code crashes on a real phone
-        /*
-        ContactManager contactManager = new ContactManager(this);
-        Iterator<String> iterator = contactManager.getContactsNames().iterator();
-        Log.d(TAG, "Start iterating through contacts.");
-        while (iterator.hasNext()) {
-            Log.d(TAG, iterator.next());
+                @Override
+                public void onProgress(Object o) {
+
+                }
+
+                @Override
+                public void onEnd(Object o) {
+                    Log.d(TAG, "Stop iterating through contacts.");
+                    List contacts = (List) o;
+                    Iterator<Contact> i = contacts.iterator();
+                    while (i.hasNext()) {
+                        Contact contact = i.next();
+                        Log.d(TAG, "name: " + contact.getName());
+                        Log.d(TAG, "phone: " + contact.getPhone());
+                    }
+                    ShareActivity.this.contacts = contacts;
+                    populateView();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Log.d(TAG, "Stop iterating through contacts.");
-        */
     }
 
     private void populateView() {
         // TODO get contact information and fill the list view with it
-        ShareListViewAdapter adapter = new ShareListViewAdapter(getApplicationContext());
-        final ListView listView = (ListView) findViewById(R.id.share_list_view);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String name = ((TextView)view.findViewById(R.id.marcopolo_cell_center)).getText().toString();
-                Toast.makeText(listView.getContext(), "Inviting " + name + "!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        listView.setAdapter(adapter);
+        try {
+            final ShareListViewAdapter adapter = new ShareListViewAdapter(this, contacts);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Contact contact = (Contact) adapter.getItem(position);
+                    inviteUser(view, contact);
+                }
+            });
+            listView.setAdapter(adapter);
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public void inviteUser(View v, Contact contact) {
+        GetFriendsPhoneNumbersTask getFriendsPhoneNumbersTask = new GetFriendsPhoneNumbersTask();
+        HashMap<String, String> data = new HashMap<>();
+
+        getFriendsPhoneNumbersTask.setCommunicator(this);
+        data.put("phone", contact.getPhone());
+        try {
+            data.put("user_id", new JSONObject(user_data).getString("user_id"));
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            return;
+        }
+        getFriendsPhoneNumbersTask.execute(data);
     }
 
     private void toggleSocialButtons() {
@@ -180,5 +236,25 @@ public class ShareActivity extends Activity implements GestureDetector.OnGesture
             toggleSocialButtons();
         }
         return true;
+    }
+
+    @Override
+    public void gotResponse(JSONObject r, int code) {
+        if (code == ADD_CONTACTS) {
+            String status;
+            try {
+                status = r.getString("status");
+                Log.d(TAG, "status: " + status);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                return;
+            }
+
+            if (status.equals("two")) {
+                Log.d(TAG, "One of the parameters was not sent correctly.");
+            } else {
+                Toast.makeText(this, "Your contacts were invited to join MarcoPolo!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

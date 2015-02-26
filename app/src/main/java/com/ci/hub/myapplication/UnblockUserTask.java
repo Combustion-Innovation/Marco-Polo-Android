@@ -10,12 +10,12 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 /**
- * Created by Alex on 1/23/15.
+ * Created by Alex on 2/18/15.
  */
-public class PhoneLoginTask extends AsyncTask<HashMap<String, String>, String, JSONObject> {
-    public static final String TAG = "PhoneLoginTask";
+public class UnblockUserTask extends AsyncTask<HashMap<String, String>, Void, JSONObject> {
+    public final static String TAG = "UnblockUserTask";
 
-    private static final String URL = "http://combustionlaboratory.com/marco/php/phoneLogin.php";
+    private final static String URL = "http://combustionlaboratory.com/marco/php/unblockUser.php";
 
     private Communicator communicator;
 
@@ -25,7 +25,7 @@ public class PhoneLoginTask extends AsyncTask<HashMap<String, String>, String, J
         try {
             result = ServerTaskUtility.sendData(URL, params[0]);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
             return null;
         }
         return result;
@@ -34,17 +34,7 @@ public class PhoneLoginTask extends AsyncTask<HashMap<String, String>, String, J
     @Override
     protected void onPostExecute(JSONObject result) {
         super.onPostExecute(result);
-
-        try {
-            Log.d(TAG, result.toString(4));
-            Log.d(TAG, "THE RESULT: " + result.getString("status"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
-        communicator.gotResponse(result, LogInActivity.LOGIN);
-
+        communicator.gotResponse(result, MainActivity.UNBLOCK_USER);
     }
 
     public void setCommunicator(Communicator communicator) {

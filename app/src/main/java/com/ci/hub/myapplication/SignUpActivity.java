@@ -21,6 +21,9 @@ import static android.view.View.OnClickListener;
 public class SignUpActivity extends FragmentActivity implements Communicator, VerificationCodeCallback {
     public static final String TAG = "SignUpActivity";
 
+    // callback codes
+    public final static int SIGN_UP = 0;
+
     private String submittedUsername;
     private String submittedPhone;
     private String submittedPassword;
@@ -80,7 +83,6 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
     }
 
     public void sendVerificationCode() {
-        // do google voice stuff here
         SetPhoneForVerificationTask phoneTask = new SetPhoneForVerificationTask();
         HashMap<String, String> data = new HashMap<String, String>();
 
@@ -98,21 +100,43 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
     }
 
     @Override
-    public void gotResponse(JSONObject s) {
-        Intent intent = getIntent();
-        JSONObject form;
-        try {
-            Log.d(TAG, s.toString(4));
-            form = (JSONObject) s.get("form");
-        } catch (Exception e) {
-            e.printStackTrace();
-            setResult(RESULT_CANCELED, intent);
-            finish();
-            return;
+    public void gotResponse(JSONObject s, int code) {
+        if (code == SIGN_UP) {
+            String data;
+            JSONObject form;
+            try {
+                data = s.getString("status");
+                Log.d(TAG, s.toString(4));
+                form = (JSONObject) s.get("form");
+
+                // in case something goes wrong with the result, return to InitActivity (this shouldn't happen)
+                Intent intent = getIntent();
+                intent.putExtra("user_data", form.toString());
+                setResult(RESULT_CANCELED, intent);
+                finish();
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                return;
+            }
+
+            // https://files.slack.com/files-pri/T02G10T18-F03EVFSUU/url_documentation.txt
+            if (data.equals("five")) {
+                Log.d(TAG, "A parameter was missing when communicating with the server.");
+            } else if (data.equals("four")) {
+                Toast.makeText(this, "The code did not match the code sent to your phone.", Toast.LENGTH_LONG).show();
+            } else if (data.equals("three")) {
+                Toast.makeText(this, "An account already exists with this phone number.", Toast.LENGTH_LONG).show();
+            } else if (data.equals("two")) {
+                Toast.makeText(this, "An account already exists with this username.", Toast.LENGTH_LONG).show();
+            } else if (data.equals("one")) {
+                Toast.makeText(this, "Welcome to MarcoPolo!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = getIntent();
+                intent.putExtra("user_data", form.toString());
+                setResult(RESULT_OK, intent);
+                finish();
+            }
         }
-        intent.putExtra("user_data", form.toString());
-        setResult(RESULT_OK, intent);
-        finish();
     }
 
     @Override
@@ -120,14 +144,14 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
         PhoneSignupTask phoneSignupTask = new PhoneSignupTask();
         HashMap<String, String> data = new HashMap<String, String>();
 
-        phoneSignupTask.setActivity(this);
-        data.put("username", submittedUsername);
-        data.put("phone", submittedPhone);
-        data.put("f_name", "DUMMY_FIRST_NAME");
-        data.put("l_name", "DUMMY_LAST_NAME");
-        data.put("password", submittedPassword);
-        data.put("device", "Android");
-        data.put("code", code);
+        phoneSignupTask.setCommunicator(this);
+        data.put("username", submittedUsername);    // entered username
+        data.put("phone", submittedPhone);          // entered phone number
+        data.put("f_name", "DUMMY_FIRST_NAME");     // this isn't used atm
+        data.put("l_name", "DUMMY_LAST_NAME");      // same
+        data.put("password", submittedPassword);    // entered password
+        data.put("device", "Android");              // the type of the user's device
+        data.put("code", code);                     // the verification code sent to the user's phone
 
         phoneSignupTask.execute(data);
     }

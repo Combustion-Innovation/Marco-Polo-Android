@@ -1,5 +1,6 @@
 package com.ci.hub.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Alex on 2/11/15.
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter {
     public final static String TAG = "MainListViewAdapter";
 
+    private MainActivity activity;
     private Context context;
     private ArrayList<JSONObject> cellData;
     private int poloCount;
@@ -32,27 +35,37 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
 
     private char currentInitial; // this is used when iterating through friends
 
-    public MainListViewAdapter(Context context, ArrayList<JSONObject> cellData) {
-        this.context = context;
+    public MainListViewAdapter(MainActivity activity, ArrayList<JSONObject> cellData) {
+        this.activity = activity;
+        this.context = activity.getApplicationContext();
         this.cellData = cellData;
 
+        if (cellData.size() == 0) { // if there is no cellData
+            poloCount = 0;
+            marcoCount = 0;
+            friendCount = 0;
+            return;
+        }
+
         int i = 0;
-        JSONObject currentCell = cellData.get(0);;
+        JSONObject currentCell;
         try {
             // get polo count
-            while (currentCell.getString("type").equals("POLO")) {
-                i++;
+            for (;i < cellData.size(); i++) {
                 currentCell = cellData.get(i);
+                if (!currentCell.getString("type").equals("POLO")) break;
             }
             poloCount = i;
             Log.d(TAG, "polo count " + poloCount);
 
             // get marco count
-            while (currentCell.getString("type").equals("MARCO")) {
-                i++;
+            for (;i < cellData.size(); i++) {
+                Log.d(TAG, "i: " + i);
+                Log.d(TAG, "cellData.size(): " + cellData.size());
                 currentCell = cellData.get(i);
+                if (!currentCell.getString("type").equals("MARCO")) break;
             }
-            marcoCount = i;
+            marcoCount = i - poloCount;
             Log.d(TAG, "marco count " + marcoCount);
 
             // get friend count
@@ -85,7 +98,7 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         Log.d(TAG, "Filling values for position " + position + " out of " + (getCount() - 1));
 
         // get the corresponding cell data
-        JSONObject data = cellData.get(position);
+        final JSONObject data = cellData.get(position);
         // determine what type the cell is from the position
         String type;
         try {
@@ -111,7 +124,7 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_UP:
-                        Log.d(TAG, "Sending Mr. " + Math.abs(convertView.hashCode()) + " a polo.");
+                        blockUser(convertView, data);
                         return false;
                     case MotionEvent.ACTION_DOWN:
                         return true;
@@ -191,10 +204,10 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         }
 
         try {
-            char initial = data.getString("username").charAt(0);
+            char initial = data.getString("username").toUpperCase().charAt(0);
             if (currentInitial != initial) {
                 currentInitial = initial;
-                topLeft.setText(Character.toString(currentInitial));
+                topLeft.setText(Character.toString(initial));
             }
             center.setText(data.getString("username"));
             bottomRight.setText("MARCO"); // TODO this seems to be completely random right now
@@ -217,5 +230,9 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    private void blockUser(View v, JSONObject userData) {
+        activity.blockUser(userData);
     }
 }

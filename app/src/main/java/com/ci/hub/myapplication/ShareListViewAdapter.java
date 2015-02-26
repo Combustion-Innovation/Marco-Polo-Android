@@ -1,5 +1,6 @@
 package com.ci.hub.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,8 +12,12 @@ import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ci.hub.contactmanager.Contact;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Alex on 2/4/15.
@@ -20,12 +25,14 @@ import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 public class ShareListViewAdapter extends BaseSwipeAdapter implements ListAdapter {
     public final static String TAG = "ListViewAdapter";
 
+    private ShareActivity activity;
     private Context context;
-    //private JSONArray contacts;
+    private List<Contact> contacts;
 
-    public ShareListViewAdapter(Context context) {
-        this.context = context;
-        //this.contacts = contacts;
+    public ShareListViewAdapter(ShareActivity activity, List<Contact> contacts) {
+        this.activity = activity;
+        this.context = activity.getApplicationContext();
+        this.contacts = contacts;
     }
 
     @Override
@@ -45,19 +52,20 @@ public class ShareListViewAdapter extends BaseSwipeAdapter implements ListAdapte
         final RelativeLayout top = (RelativeLayout) convertView.findViewById(R.id.top_wrapper);
         final TextView center = (TextView) convertView.findViewById(R.id.marcopolo_cell_center);
         final TextView bottomLeft = (TextView) convertView.findViewById(R.id.marcopolo_cell_bottom_left);
+        final Contact currentContact = contacts.get(position);
 
         if (position % 2 != 0) {
             top.setBackgroundColor(context.getResources().getColor(R.color.dark_green));
         }
-        center.setText("Mr. " + Math.abs(convertView.hashCode()));
-        bottomLeft.setText("" + position);
+        center.setText(currentContact.getName());
+        bottomLeft.setText(currentContact.getPhone());
         swipeLayout.setDragEdge(SwipeLayout.DragEdge.Left);
         block.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch(event.getActionMasked()) {
                     case MotionEvent.ACTION_UP:
-                        Log.d(TAG, "Blocking Mr. " + Math.abs(convertView.hashCode()) + ".");
+                        inviteUser(convertView, currentContact);
                         return false;
                     case MotionEvent.ACTION_DOWN:
                         return true;
@@ -70,16 +78,20 @@ public class ShareListViewAdapter extends BaseSwipeAdapter implements ListAdapte
 
     @Override
     public int getCount() {
-        return 10;
+        return contacts.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return contacts.get(position);
     }
 
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    private void inviteUser(View v, Contact contact) {
+        Log.d(TAG, "Clicked on the cancel button for " + contact.getName());
     }
 }

@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -21,6 +23,9 @@ import static android.view.View.OnTouchListener;
 public class LogInActivity extends Activity implements Communicator {
     public static final String TAG = "LogInActivity";
 
+    //callback codes
+    public static final int LOGIN = 0;
+
     private OnClickListener backOCL = new OnClickListener() {
 
         @Override
@@ -31,6 +36,7 @@ public class LogInActivity extends Activity implements Communicator {
         }
     };
 
+    // OTL for the login button
     private OnTouchListener enterOTL = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -66,13 +72,12 @@ public class LogInActivity extends Activity implements Communicator {
     }
 
     private void logIn() {
-        // log in
         PhoneLoginTask phoneLoginTask = new PhoneLoginTask();
         HashMap<String, String> data = new HashMap<String, String>();
 
-        phoneLoginTask.setActivity(this);
-        data.put("username", getUsername());
-        data.put("password", getPassword());
+        phoneLoginTask.setCommunicator(this);
+        data.put("username", getUsername());    // username the user entered
+        data.put("password", getPassword());    // password the user entered
 
         phoneLoginTask.execute(data);
     }
@@ -86,10 +91,33 @@ public class LogInActivity extends Activity implements Communicator {
     }
 
     @Override
-    public void gotResponse(JSONObject result) {
-        Intent intent = getIntent();
-        intent.putExtra("user_data", result.toString());
-        setResult(RESULT_OK, intent);
-        finish();
+    public void gotResponse(JSONObject result, int code) {
+        if (code == LOGIN) {
+            String status;
+            try {
+                Log.d(TAG, result.toString(4));
+                status = result.getString("status");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            // https://files.slack.com/files-pri/T02G10T18-F03EVFSUU/url_documentation.txt
+            if (status.equals("two")) {
+                Toast.makeText(this, "The username / password combination is incorrect.", Toast.LENGTH_LONG).show();
+
+                Intent intent = getIntent();
+                intent.putExtra("user_data", result.toString());
+                setResult(RESULT_CANCELED, intent);
+                finish();
+            } else if (status.equals("one")) {
+                Toast.makeText(this, "Logged in!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = getIntent();
+                intent.putExtra("user_data", result.toString());
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
     }
 }
