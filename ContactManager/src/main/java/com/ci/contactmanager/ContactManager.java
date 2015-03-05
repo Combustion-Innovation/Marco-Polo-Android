@@ -52,7 +52,7 @@ public class ContactManager {
                 String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    System.out.println("name: " + name + ", ID : " + id);
+                    //Log.d(TAG, "name: " + name + ", ID : " + id);
 
                     // get the phone number
                     Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
@@ -61,7 +61,7 @@ public class ContactManager {
                     while (pCur.moveToNext()) {
                         String phone = pCur.getString(
                                 pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        System.out.println("phone number: " + phone);
+                        //Log.d(TAG, "phone number: " + phone);
                         contact = new Contact(name, phone);
                     }
                     pCur.close();

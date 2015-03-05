@@ -5,7 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/ContactManager/ContactManager.iml" filepath="$PROJECT_DIR$/ContactManager/ContactManager.iml" />
       <module fileurl="file://$PROJECT_DIR$/MarcoPolo.iml" filepath="$PROJECT_DIR$/MarcoPolo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/swipelayout/swipelayout.iml" filepath="$PROJECT_DIR$/swipelayout/swipelayout.iml" />
+      <module fileurl="file://$PROJECT_DIR$/facebook/facebook.iml" filepath="$PROJECT_DIR$/facebook/facebook.iml" />
+      <module fileurl="file://$PROJECT_DIR$/facebookmanager/facebookmanager.iml" filepath="$PROJECT_DIR$/facebookmanager/facebookmanager.iml" />
     </modules>
   </component>
 </project>

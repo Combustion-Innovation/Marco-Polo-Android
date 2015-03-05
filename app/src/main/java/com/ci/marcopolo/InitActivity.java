@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 
+import com.facebook.AppEventsLogger;
+
 import org.json.JSONObject;
 
 
@@ -83,7 +85,7 @@ public class InitActivity extends FragmentActivity {
         }
 
         //* MORE DEBUGGING
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
         intent.putExtra("user_data", user_data);
         startActivity(intent);
         finish();
@@ -117,6 +119,22 @@ public class InitActivity extends FragmentActivity {
         } else {
             Log.d(TAG, "There was an error with the intent.");
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this);
     }
 
     @Override

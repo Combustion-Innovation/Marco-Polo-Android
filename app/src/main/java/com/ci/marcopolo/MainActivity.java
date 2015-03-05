@@ -26,8 +26,11 @@ public class MainActivity extends Activity implements Communicator {
     public final static int GET_MARCO_POLO_DATA = 0;
     public final static int BLOCK_USER = 1;
     public final static int UNBLOCK_USER = 2;
+    public final static int SENT_POLO = 3;
+    public final static int SENT_MARCO = 4;
 
     private String user_data;
+    /*
     private JSONObject marcoPoloData;
     private JSONObject mp;
     private JSONArray blocked;
@@ -35,7 +38,8 @@ public class MainActivity extends Activity implements Communicator {
     private JSONArray polos;
     private JSONObject friends;
     private JSONObject contacts;
-    private ArrayList<JSONObject> flattenedCellData;   // polos + marcos + flattened friends all together
+    */
+    private MarcoPoloData marcoPoloData;
 
     // these are for debugging purposes only
     private boolean unblocked_users = false;
@@ -100,11 +104,12 @@ public class MainActivity extends Activity implements Communicator {
                 lat,
                 lng;
         try {
+            Log.d(TAG, clickedUser.toString(4));
             user_id = currentUser.getString("user_id");
             sendee_id = clickedUser.getString("user_id");
-            marco_id = "69";    // TODO not sure where to find this value
-            lat = "147"; // TODO get the real value of lat
-            lng = "123"; // TODO get the real value of lng
+            marco_id = clickedUser.getString("marco_id");    // TODO not sure where to find this value
+            lat = "147";        // TODO get the real value of lat
+            lng = "123";        // TODO get the real value of lng
         } catch (Exception e) {
             e.printStackTrace(System.err);
             return;
@@ -122,8 +127,7 @@ public class MainActivity extends Activity implements Communicator {
     private void sendMarco(JSONObject currentUser, JSONObject clickedUser) {
         MarcoWasClickedTask marcoWasClickedTask = new MarcoWasClickedTask();
         HashMap<String, String> data = new HashMap<String, String>();
-        String user_id,
-                sendee_id;
+        String user_id, sendee_id;
         try {
             JSONObject user_data_json = new JSONObject(user_data);
             user_id = user_data_json.getString("user_id");
@@ -147,7 +151,7 @@ public class MainActivity extends Activity implements Communicator {
             return;
         }
 
-        final MainListViewAdapter adapter = new MainListViewAdapter(this, flattenedCellData);
+        final MainListViewAdapter adapter = new MainListViewAdapter(this, marcoPoloData);
         final ListView listView = (ListView) findViewById(R.id.main_list_view);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -155,10 +159,12 @@ public class MainActivity extends Activity implements Communicator {
                 // determine what type the cell is from the position
                 String type, name;
                 JSONObject currentUser, clickedUser;
-                if (position < polos.length()) {
+                int polosLength = marcoPoloData.getPolos().length(),
+                    marcosLength = marcoPoloData.getMarcos().length();
+                if (position < polosLength) {
                     // polos are added first
                     type = "POLO";
-                } else if (position < polos.length() + marcos.length()) {
+                } else if (position < polosLength + marcosLength) {
                     // if the position is greater than the # of polos, it becomes a marco
                     type = "MARCO";
                 } else {
@@ -168,7 +174,12 @@ public class MainActivity extends Activity implements Communicator {
 
                 try {
                     currentUser = new JSONObject(user_data);
-                    clickedUser = flattenedCellData.get(position);
+                    String clickedUsername = marcoPoloData.get(position).getString("username");
+                    if (type.equals("POLO")) {
+                        clickedUser = marcoPoloData.getPolo(clickedUsername);
+                    } else {
+                        clickedUser = marcoPoloData.getMarco(clickedUsername);
+                    }
                     name = clickedUser.getString("username");
                 } catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -176,12 +187,12 @@ public class MainActivity extends Activity implements Communicator {
                 }
 
                 if (type == "POLO") {
-                    sendPolo(currentUser, clickedUser);
-                    Toast.makeText(listView.getContext(), "Poloing " + name + "!", Toast.LENGTH_SHORT).show();
-
-                } else { //if (type == "MARCO") {
                     sendMarco(currentUser, clickedUser);
                     Toast.makeText(listView.getContext(), "Marcoing " + name + "!", Toast.LENGTH_SHORT).show();
+
+                } else { //if (type == "MARCO") {
+                    sendPolo(currentUser, clickedUser);
+                    Toast.makeText(listView.getContext(), "Poloing " + name + "!", Toast.LENGTH_SHORT).show();
                 }
 
                 getMarcoPoloData(); // refresh marco/polo data after sending
@@ -192,46 +203,13 @@ public class MainActivity extends Activity implements Communicator {
 
     @Override
     public void gotResponse(JSONObject s, int code) {
+        // CALLBACK: after getting the marco/polo data from the server
         if (code == GET_MARCO_POLO_DATA) {
             Log.d(TAG, "Got the marco/polo data.");
-            marcoPoloData = s;
-            try {
-                mp = s.getJSONObject("mp");
-                blocked = s.getJSONArray("blocked");
-                marcos = s.getJSONArray("marcos");
-                polos = s.getJSONArray("polos");
-                friends = s.getJSONObject("friends");
-                contacts = s.getJSONObject("contacts");
-
-                flattenedCellData = new ArrayList<JSONObject>();
-                // fill cell_data_array
-                for (int i = 0; i < polos.length(); i++) {
-                    JSONObject polo = polos.getJSONObject(i);
-                    polo.put("type", "POLO");
-                    flattenedCellData.add(polo);
-                }
-                for (int i = 0; i < marcos.length(); i++) {
-                    JSONObject marco = marcos.getJSONObject(i);
-                    marco.put("type", "MARCO");
-                    flattenedCellData.add(marco);
-                }
-                if (!friends.has("empty")) {
-                    for (char initial = 'A'; initial <= 'Z'; initial++) {
-                        JSONArray initialGroup = friends.getJSONArray(initial + "");
-                        for (int i = 0; i < initialGroup.length(); i++) {
-                            JSONObject friend = initialGroup.getJSONObject(i);
-                            friend.put("type", "FRIEND");
-                            flattenedCellData.add(friend);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                return;
-            }
+            marcoPoloData = new MarcoPoloData(s);
 
             Log.d(TAG, "unblocked_users is " + unblocked_users);
-            if (!unblocked_users) { // TODO this is for debugging only
+            if (!unblocked_users) { // TODO this is for debugging only!
                 Log.d(TAG, "Unblocking users.");
                 unblockAllUsers();
                 unblocked_users = true;
@@ -239,6 +217,7 @@ public class MainActivity extends Activity implements Communicator {
             } else {
                 populateView();
             }
+        // CALLBACK: after blocking a user
         } else if (code == BLOCK_USER) {
             String status;
             try {
@@ -255,6 +234,7 @@ public class MainActivity extends Activity implements Communicator {
                 Toast.makeText(this, "User was successfully blocked", Toast.LENGTH_SHORT).show();
                 getMarcoPoloData();
             }
+        // CALLBACK: after unblocking a user
         } else if (code == UNBLOCK_USER) {
             String status;
             try {
@@ -270,6 +250,40 @@ public class MainActivity extends Activity implements Communicator {
             } else if (status.equals("one")) {
                 Toast.makeText(this, "The user was successfully unblocked.", Toast.LENGTH_SHORT).show();
                 getMarcoPoloData();
+            }
+        } else if (code == SENT_POLO) {
+            String status;
+            try {
+                // the server response here is weirdly formatted
+                JSONArray results = s.getJSONArray("results");
+                status = results.getJSONObject(0).getString("status");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            Log.d(TAG, "THE RESULT: " + status);
+
+            if (status.equals("two")) {
+                Log.d(TAG, "A parameter was incorrect.");
+            } else if (status.equals("one")) {
+                Toast.makeText(this, "Sent a polo!", Toast.LENGTH_SHORT).show();
+            }
+        } else if (code == SENT_MARCO) {
+            String data;
+            try {
+                data = s.getString("status");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            Log.d(TAG, "THE RESULT: " + data);
+
+            if (data.equals("two")) {
+                Log.d(TAG, "A parameter was incorrect.");
+            } else if (data.equals("one")) {
+                Toast.makeText(this, "Sent a marco!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -290,6 +304,7 @@ public class MainActivity extends Activity implements Communicator {
     }
 
     private void unblockAllUsers() {
+        JSONArray blocked = marcoPoloData.getBlocked();
         for (int i = 0; i < blocked.length(); i++) {
             JSONObject unblockUser;
             try {

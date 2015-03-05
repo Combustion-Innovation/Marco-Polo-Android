@@ -3,6 +3,7 @@ package com.ci.marcopolo;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -33,23 +34,7 @@ public class PoloWasClickedTask extends AsyncTask<HashMap<String, String>, Void,
     @Override
     protected void onPostExecute(JSONObject result) {
         super.onPostExecute(result);
-        //communicator.gotResponse(result);
-
-        String data;
-        try {
-            data = result.getString("status");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
-        Log.d(TAG, "THE RESULT: " + data);
-
-        if (data.equals("two")) {
-            Log.d(TAG, "A parameter was incorrect.");
-        } else if (data.equals("one")) {
-            Log.d(TAG, "Marco was sent!");
-        }
+        communicator.gotResponse(result, MainActivity.SENT_POLO);
     }
 
     public void setCommunicator(Communicator communicator) {

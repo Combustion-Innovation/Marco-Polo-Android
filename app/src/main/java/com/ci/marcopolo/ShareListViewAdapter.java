@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Alex on 2/4/15.
  */
 public class ShareListViewAdapter extends BaseSwipeAdapter implements ListAdapter {
-    public final static String TAG = "ListViewAdapter";
+    public final static String TAG = "ShareListViewAdapter";
 
     private ShareActivity activity;
     private Context context;
@@ -58,20 +58,7 @@ public class ShareListViewAdapter extends BaseSwipeAdapter implements ListAdapte
         center.setText(currentContact.getName());
         bottomLeft.setText(currentContact.getPhone());
         swipeLayout.setDragEdge(SwipeLayout.DragEdge.Left);
-        block.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getActionMasked()) {
-                    case MotionEvent.ACTION_UP:
-                        inviteUser(convertView, currentContact);
-                        return false;
-                    case MotionEvent.ACTION_DOWN:
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
+        swipeLayout.setDragDistance(100);
     }
 
     @Override
@@ -87,9 +74,5 @@ public class ShareListViewAdapter extends BaseSwipeAdapter implements ListAdapte
     @Override
     public long getItemId(int position) {
         return position;
-    }
-
-    private void inviteUser(View v, Contact contact) {
-        Log.d(TAG, "Clicked on the cancel button for " + contact.getName());
     }
 }

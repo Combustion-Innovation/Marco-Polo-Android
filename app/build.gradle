@@ -39,4 +39,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile project(':ContactManager')
     compile 'com.daimajia.swipelayout:library:1.1.8'
+    compile project(':facebook')
+    compile project(':facebookmanager')
 }

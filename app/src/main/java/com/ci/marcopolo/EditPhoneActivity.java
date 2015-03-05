@@ -80,7 +80,6 @@ public class EditPhoneActivity extends FragmentActivity implements VerificationC
         verificationCodeDialog.show(fm, TAG);
     }
 
-    // TODO talk to Luis and fix whatever is wrong with this
     private void sendVerificationCode() {
         AsyncTask<Void, Void, JSONObject> userPhoneChangeTask;
         final String URL = "http://combustionlaboratory.com/marco/php/sendVerificationNewNumber.php";

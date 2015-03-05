@@ -26,53 +26,20 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
 
     private MainActivity activity;
     private Context context;
-    private ArrayList<JSONObject> cellData;
+    private MarcoPoloData data;
     private int poloCount;
     private int marcoCount;
     private int friendCount;
 
     private char currentInitial; // this is used when iterating through friends
 
-    public MainListViewAdapter(MainActivity activity, ArrayList<JSONObject> cellData) {
+    public MainListViewAdapter(MainActivity activity, MarcoPoloData data) {
         this.activity = activity;
         this.context = activity.getApplicationContext();
-        this.cellData = cellData;
-
-        if (cellData.size() == 0) { // if there is no cellData
-            poloCount = 0;
-            marcoCount = 0;
-            friendCount = 0;
-            return;
-        }
-
-        int i = 0;
-        JSONObject currentCell;
-        try {
-            // get polo count
-            for (;i < cellData.size(); i++) {
-                currentCell = cellData.get(i);
-                if (!currentCell.getString("type").equals("POLO")) break;
-            }
-            poloCount = i;
-            Log.d(TAG, "polo count " + poloCount);
-
-            // get marco count
-            for (;i < cellData.size(); i++) {
-                Log.d(TAG, "i: " + i);
-                Log.d(TAG, "cellData.size(): " + cellData.size());
-                currentCell = cellData.get(i);
-                if (!currentCell.getString("type").equals("MARCO")) break;
-            }
-            marcoCount = i - poloCount;
-            Log.d(TAG, "marco count " + marcoCount);
-
-            // get friend count
-            friendCount = getCount() - poloCount - marcoCount;
-            Log.d(TAG, "friend count " + friendCount);
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            return;
-        }
+        this.data = data;
+        this.poloCount = data.getPoloCount();
+        this.marcoCount = data.getMarcoCount();
+        this.friendCount = data.getFriendCount();
     }
 
     @Override
@@ -96,11 +63,11 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         Log.d(TAG, "Filling values for position " + position + " out of " + (getCount() - 1));
 
         // get the corresponding cell data
-        final JSONObject data = cellData.get(position);
+        final JSONObject cellData = this.data.get(position);
         // determine what type the cell is from the position
         String type;
         try {
-            type = data.getString("type");
+            type = cellData.getString("type");
         } catch (Exception e) {
             e.printStackTrace(System.err);
             return;
@@ -108,13 +75,13 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
 
         if (type == "POLO") {
             // polos are added first
-            fillPolo(position, convertView, data);
+            fillPolo(position, convertView, cellData);
         } else if (type == "MARCO") {
             int effectivePosition = position - poloCount;
-            fillMarco(effectivePosition, convertView, data);
+            fillMarco(effectivePosition, convertView, cellData);
         } else {
             int effectivePosition = position - poloCount - marcoCount;
-            fillFriend(effectivePosition, convertView, data);
+            fillFriend(effectivePosition, convertView, cellData);
         }
 
         block.setOnTouchListener(new View.OnTouchListener() {
@@ -122,7 +89,7 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getActionMasked()) {
                     case MotionEvent.ACTION_UP:
-                        blockUser(convertView, data);
+                        blockUser(convertView, cellData);
                         return false;
                     case MotionEvent.ACTION_DOWN:
                         return true;
@@ -217,7 +184,7 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
 
     @Override
     public int getCount() {
-        return cellData.size();
+        return data.getTotalCount();
     }
 
     @Override
