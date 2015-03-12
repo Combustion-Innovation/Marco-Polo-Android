@@ -3,12 +3,56 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@color/blue"
     android:layout_marginBottom="-6dp">
-    
+
+    <RelativeLayout
+        android:id="@+id/main_autopolo_layout"
+        android:transitionName="autopolo_layout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentTop="true"
+        android:animateLayoutChanges="true"
+        android:background="@color/dark_yellow">
+
+        <Button
+            android:id="@+id/main_autopolo_button"
+            android:transitionName="autopolo_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:background="@null"
+            android:text="@string/autopolo"
+            android:textColor="@color/white"
+            android:textSize="30sp"/>
+
+        <TextView
+            android:id="@+id/main_autopolo_image"
+            android:transitionName="autopolo_image"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:text="IMAGE"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/main_autopolo_status"
+            android:layout_width="40dp"
+            android:layout_height="16dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical|right"
+            android:paddingRight="5dp"
+            android:text="ON"
+            android:textColor="@color/white"
+            android:textSize="10sp"/>
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/main_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/main_autopolo_layout"
         android:orientation="vertical"
         android:padding="0dp">
 

@@ -63,5 +63,9 @@
             android:name="com.ci.marcopolo.EditPasswordActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
+        <activity
+            android:name="com.ci.marcopolo.AutoPoloActivity"
+            android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
     </application>
 </manifest>

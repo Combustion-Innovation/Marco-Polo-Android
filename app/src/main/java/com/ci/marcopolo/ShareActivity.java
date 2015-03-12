@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -18,7 +17,6 @@ import com.ci.contactmanager.CICallback;
 import com.ci.contactmanager.Contact;
 import com.ci.contactmanager.ContactManager;
 import com.ci.facebookmanager.FBCallback;
-import com.ci.facebookmanager.FBFragment;
 import com.ci.facebookmanager.FBUtility;
 import com.daimajia.swipe.SwipeLayout;
 import com.facebook.FacebookException;
@@ -39,7 +37,7 @@ import java.util.List;
 /**
  * Created by Alex on 1/24/15.
  */
-public class ShareActivity extends FragmentActivity implements Communicator, GestureDetector.OnGestureListener {
+public class ShareActivity extends Activity implements Communicator, GestureDetector.OnGestureListener {
     public final static String TAG = "ShareActivity";
 
     // callback codes

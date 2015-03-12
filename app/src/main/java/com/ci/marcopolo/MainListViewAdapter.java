@@ -100,7 +100,7 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         });
     }
 
-    private void fillPolo(int position, final View convertView, JSONObject data) {
+    private void fillPolo(int position, final View convertView, JSONObject cellData) {
         final SwipeLayout swipeLayout = (SwipeLayout) convertView.findViewById(getSwipeLayoutResourceId(position));
         final ImageButton block = (ImageButton) convertView.findViewById(R.id.marcopolo_block);
         final RelativeLayout top = (RelativeLayout) convertView.findViewById(R.id.top_wrapper);
@@ -117,7 +117,7 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         }
 
         try {
-            center.setText(data.getString("username"));
+            center.setText(cellData.getString("username"));
             bottomRight.setText("POLO");
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -125,7 +125,7 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         }
     }
 
-    private void fillMarco(int position, final View convertView, JSONObject data) {
+    private void fillMarco(int position, final View convertView, JSONObject cellData) {
         final SwipeLayout swipeLayout = (SwipeLayout) convertView.findViewById(getSwipeLayoutResourceId(position));
         final ImageButton block = (ImageButton) convertView.findViewById(R.id.marcopolo_block);
         final RelativeLayout top = (RelativeLayout) convertView.findViewById(R.id.top_wrapper);
@@ -142,8 +142,8 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         }
 
         try {
-            center.setText(data.getString("username"));
-            bottomLeft.setText(data.getString("distance"));
+            center.setText(cellData.getString("username"));
+            bottomLeft.setText(cellData.getString("distance"));
             bottomRight.setText("MARCO");
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -151,7 +151,7 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         }
     }
 
-    private void fillFriend(int position, final View convertView, JSONObject data) {
+    private void fillFriend(int position, final View convertView, JSONObject cellData) {
         final SwipeLayout swipeLayout = (SwipeLayout) convertView.findViewById(getSwipeLayoutResourceId(position));
         final ImageButton block = (ImageButton) convertView.findViewById(R.id.marcopolo_block);
         final RelativeLayout top = (RelativeLayout) convertView.findViewById(R.id.top_wrapper);
@@ -169,13 +169,18 @@ public class MainListViewAdapter extends BaseSwipeAdapter implements ListAdapter
         }
 
         try {
-            char initial = data.getString("username").toUpperCase().charAt(0);
+            char initial = cellData.getString("username").toUpperCase().charAt(0);
             if (currentInitial != initial) {
                 currentInitial = initial;
                 topLeft.setText(Character.toString(initial));
             }
-            center.setText(data.getString("username"));
-            bottomRight.setText("MARCO"); // TODO this seems to be completely random right now
+            String username = cellData.getString("username");
+            center.setText(username);
+            if (data.getPolo(username) != null) {
+                bottomRight.setText("POLO");
+            } else {
+                bottomRight.setText("MARCO");
+            }
         } catch (Exception e) {
             e.printStackTrace(System.err);
             return;

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_yellow">
+
+    <Button
+        android:id="@+id/autopolo_button"
+        android:transitionName="autopolo_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:text="@string/autopolo"
+        android:textColor="@color/white"
+        android:textSize="30sp"/>
+
+    <TextView
+        android:id="@+id/back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="start|top"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingTop="5dp"
+        android:text="X"
+        android:textSize="30sp"
+        android:textColor="@color/white"/>
+
+    <LinearLayout
+        android:id="@+id/autopolo_on_off_switch"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/autopolo_button"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/autopolo_off"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/off"
+            android:textSize="20sp"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/autopolo_on"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/on"
+            android:textSize="20sp"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/autopolo_polo_type_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/autopolo_on_off_switch"
+        android:gravity="center"
+        android:text="@string/choose_your_polo"
+        android:textSize="20sp"
+        android:textColor="@color/white"/>
+
+    <LinearLayout
+        android:id="@+id/autopolo_polo_type"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/autopolo_polo_type_label">
+
+        <TextView
+            android:id="@+id/autopolo_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="AUDIO"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/autopolo_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="CAMERA"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/autopolo_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="PLACE"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/autopolo_timer_label"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/autopolo_polo_type"
+        android:gravity="center"
+        android:text="@string/add_a_timer"
+        android:textColor="@color/white"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/autopolo_gone_time_label"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/autopolo_timer_label"
+        android:gravity="center"
+        android:text="@string/since_you_been_gone"
+        android:textColor="@color/white"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/autopolo_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="IMAGE"
+        android:textColor="@color/white"
+        android:textSize="20sp"/>
+</RelativeLayout>

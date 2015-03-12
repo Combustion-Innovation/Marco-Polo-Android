@@ -127,9 +127,11 @@ public class MarcoPoloData {
                 }
             } catch (Exception e) {
                 e.printStackTrace(System.err);
+                Log.d(TAG, "returning null");
                 return null;
             }
         }
+        Log.d(TAG, "returning null");
         return null;
     }
 
@@ -143,9 +145,31 @@ public class MarcoPoloData {
                 }
             } catch (Exception e) {
                 e.printStackTrace(System.err);
+                Log.d(TAG, "returning null");
                 return null;
             }
         }
+        Log.d(TAG, "returning null");
+        return null;
+    }
+
+    public JSONObject getContact(String username) {
+        for (char initial = 'A'; initial <= 'Z'; initial++) {
+            try {
+                JSONArray initialGroup = friends.getJSONArray(initial + "");
+                for (int i = 0; i < initialGroup.length(); i++) {
+                    JSONObject currentContact = initialGroup.getJSONObject(i);
+                    if (currentContact.getString("username").equals(username)) {
+                        return currentContact;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                Log.d(TAG, "returning null");
+                return null;
+            }
+        }
+        Log.d(TAG, "returning null");
         return null;
     }
 

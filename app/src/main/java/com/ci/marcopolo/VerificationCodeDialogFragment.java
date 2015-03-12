@@ -54,6 +54,7 @@ public class VerificationCodeDialogFragment extends DialogFragment {
                     Toast.makeText(getActivity(), "You must enter the verification code", Toast.LENGTH_LONG).show();
                 } else {
                     ((VerificationCodeCallback) getActivity()).onVerification(code);
+                    dismiss();
                 }
             }
         });

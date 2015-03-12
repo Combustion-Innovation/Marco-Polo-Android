@@ -84,9 +84,42 @@ public class InitActivity extends FragmentActivity {
             return;
         }
 
-        //* MORE DEBUGGING
-        Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
+        /* MORE DEBUGGING
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra("user_data", user_data);
+        startActivity(intent);
+        finish();
+        //*/
+
+        //* OTHER DEBUGGING
+        String other_data;
+        try {
+            JSONObject user_data_json = new JSONObject();
+            user_data_json.put("user_id", "53");
+            user_data_json.put("username", "alextestaccount");
+            user_data_json.put("f_name", "");
+            user_data_json.put("l_name", "");
+            user_data_json.put("email", "");
+            user_data_json.put("phone_number", "9192289389");
+            user_data_json.put("first_login", "2015-03-06 23:24:59");
+            user_data_json.put("device", "Android");
+            user_data_json.put("is_logged_in", "");
+            user_data_json.put("picture", "");
+            user_data_json.put("push_notification", "0");
+            user_data_json.put("unit", "M");
+            user_data_json.put("push_key", "no");
+            user_data_json.put("search", "0");
+            user_data_json.put("auto_polo", "");
+            user_data_json.put("exact_location", "");
+            user_data_json.put("status", "one");
+            other_data = user_data_json.toString();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            System.exit(1);
+            return;
+        }
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("user_data", other_data);
         startActivity(intent);
         finish();
         //*/

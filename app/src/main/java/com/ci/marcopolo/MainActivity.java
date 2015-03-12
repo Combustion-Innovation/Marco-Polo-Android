@@ -1,17 +1,34 @@
 package com.ci.marcopolo;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.transition.Explode;
+import android.transition.Transition;
+import android.transition.TransitionValues;
 import android.util.Log;
+import android.util.Pair;
+import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,22 +45,25 @@ public class MainActivity extends Activity implements Communicator {
     public final static int UNBLOCK_USER = 2;
     public final static int SENT_POLO = 3;
     public final static int SENT_MARCO = 4;
+    public final static int CHANGE_SETTINGS = 5;
 
     private String user_data;
-    /*
-    private JSONObject marcoPoloData;
-    private JSONObject mp;
-    private JSONArray blocked;
-    private JSONArray marcos;
-    private JSONArray polos;
-    private JSONObject friends;
-    private JSONObject contacts;
-    */
     private MarcoPoloData marcoPoloData;
+
+    // layout objects
+    private ImageButton shareButton;
+    private ImageButton settingsButton;
+    private ListView listView;
+    private RelativeLayout autoPoloLayout;
+    private Button autoPoloButton;
+    private TextView autoPoloImage;
+
+    private int autoPoloLayoutStartHeight;
 
     // these are for debugging purposes only
     private boolean unblocked_users = false;
 
+    // gesture listeners
     private View.OnClickListener shareOCL = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -58,7 +78,22 @@ public class MainActivity extends Activity implements Communicator {
         public void onClick(View v) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             intent.putExtra("user_data", user_data);
-            startActivity(intent);
+            startActivityForResult(intent, CHANGE_SETTINGS);
+        }
+    };
+
+    private View.OnClickListener autoPoloOCL = new View.OnClickListener() {
+        private boolean expanded = false;
+
+        @Override
+        public void onClick(View v) {
+            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this,
+                    Pair.create((View) autoPoloLayout, "autopolo_layout"),
+                    Pair.create((View) autoPoloImage, "autopolo_image"),
+                    Pair.create((View) autoPoloButton, "autopolo_button"));
+            Intent intent = new Intent(getApplicationContext(), AutoPoloActivity.class);
+            intent.putExtra("user_data", user_data);
+            startActivity(intent, activityOptions.toBundle());
         }
     };
 
@@ -71,8 +106,34 @@ public class MainActivity extends Activity implements Communicator {
 
         getMarcoPoloData();
 
-        findViewById(R.id.main_share_button).setOnClickListener(shareOCL);
-        findViewById(R.id.main_settings_button).setOnClickListener(settingsOCL);
+        // get layout objects
+        shareButton = (ImageButton) findViewById(R.id.main_share_button);
+        settingsButton = (ImageButton) findViewById(R.id.main_settings_button);
+        listView = (ListView) findViewById(R.id.main_list_view);
+        autoPoloLayout = (RelativeLayout) findViewById(R.id.main_autopolo_layout);
+        autoPoloButton = (Button) findViewById(R.id.main_autopolo_button);
+        autoPoloImage = (TextView) findViewById(R.id.main_autopolo_image);
+
+        // setup layout objects
+        shareButton.setOnClickListener(shareOCL);
+        settingsButton.setOnClickListener(settingsOCL);
+        autoPoloButton.setOnClickListener(autoPoloOCL);
+        autoPoloLayout.bringToFront();  // prevents the bottom buttons from overlapping this
+        autoPoloLayoutStartHeight = autoPoloLayout.getLayoutParams().height;
+
+        // setup transitions
+        Window window = getWindow();
+        window.setSharedElementEnterTransition(new Explode());
+        window.setSharedElementExitTransition(new Explode());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == CHANGE_SETTINGS) {
+                user_data = data.getStringExtra("new_user_data");
+            }
+        }
     }
 
     private void getMarcoPoloData() {
@@ -180,6 +241,12 @@ public class MainActivity extends Activity implements Communicator {
                     } else {
                         clickedUser = marcoPoloData.getMarco(clickedUsername);
                     }
+                    if (clickedUser == null) {
+                        // this only happens when the contact has just been added
+                        // and no marcos or polos have been sent to them
+                        Log.d(TAG, "Marcoing a new contact");
+                        clickedUser = marcoPoloData.getContact(clickedUsername);
+                    }
                     name = clickedUser.getString("username");
                 } catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -187,12 +254,11 @@ public class MainActivity extends Activity implements Communicator {
                 }
 
                 if (type == "POLO") {
-                    sendMarco(currentUser, clickedUser);
-                    Toast.makeText(listView.getContext(), "Marcoing " + name + "!", Toast.LENGTH_SHORT).show();
-
-                } else { //if (type == "MARCO") {
                     sendPolo(currentUser, clickedUser);
                     Toast.makeText(listView.getContext(), "Poloing " + name + "!", Toast.LENGTH_SHORT).show();
+                } else { //if (type == "MARCO") {
+                    sendMarco(currentUser, clickedUser);
+                    Toast.makeText(listView.getContext(), "Marcoing " + name + "!", Toast.LENGTH_SHORT).show();
                 }
 
                 getMarcoPoloData(); // refresh marco/polo data after sending

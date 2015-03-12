@@ -23,6 +23,7 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
 
     // callback codes
     public final static int SIGN_UP = 0;
+    public final static int VERIFY_PHONE = 1;
 
     private String submittedUsername;
     private String submittedPhone;
@@ -55,7 +56,6 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
                 submittedPhone = phone;
                 submittedPassword = password;
 
-                openVerificationDialog();
                 sendVerificationCode();
             }
         }
@@ -79,14 +79,14 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
         findViewById(R.id.back).setOnClickListener(backOCL);
         findViewById(R.id.sign_up_enter_button).setOnClickListener(enterOCL);
 
-        setupDebug();
+        //setupDebug();
     }
 
     public void sendVerificationCode() {
         SetPhoneForVerificationTask phoneTask = new SetPhoneForVerificationTask();
         HashMap<String, String> data = new HashMap<String, String>();
 
-        phoneTask.setActivity(this);
+        phoneTask.setCommunicator(this);
         data.put("username", submittedUsername);
         data.put("phone", submittedPhone);
 
@@ -101,6 +101,7 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
 
     @Override
     public void gotResponse(JSONObject s, int code) {
+        // SIGN UP
         if (code == SIGN_UP) {
             String data;
             JSONObject form;
@@ -108,14 +109,12 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
                 data = s.getString("status");
                 Log.d(TAG, s.toString(4));
                 form = (JSONObject) s.get("form");
-
-                // in case something goes wrong with the result, return to InitActivity (this shouldn't happen)
-                Intent intent = getIntent();
-                intent.putExtra("user_data", form.toString());
-                setResult(RESULT_CANCELED, intent);
-                finish();
             } catch (Exception e) {
                 e.printStackTrace(System.err);
+                // in case something goes wrong with the result, return to InitActivity (this shouldn't happen)
+                Intent intent = getIntent();
+                setResult(RESULT_CANCELED, intent);
+                finish();
                 return;
             }
 
@@ -135,6 +134,28 @@ public class SignUpActivity extends FragmentActivity implements Communicator, Ve
                 intent.putExtra("user_data", form.toString());
                 setResult(RESULT_OK, intent);
                 finish();
+            }
+        // VERIFY PHONE
+        } else if (code == VERIFY_PHONE) {
+            String data;
+            try {
+                data = s.getString("status");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            Log.d(TAG, "THE RESULT: " + data);
+
+            if (data.equals("four")){
+                Log.d(TAG, "A parameter was missing when communicating with the server.");
+            } else if (data.equals("three")) {
+                Toast.makeText(this, "An account already exists with this phone number.", Toast.LENGTH_LONG).show();
+            } else if (data.equals("two")) {
+                Toast.makeText(this, "An account already exists with this username.", Toast.LENGTH_LONG).show();
+            } else if (data.equals("one")) {
+                Toast.makeText(this, "A verification code has been sent to your phone.", Toast.LENGTH_SHORT).show();
+                openVerificationDialog();
             }
         }
     }

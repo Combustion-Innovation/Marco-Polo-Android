@@ -50,5 +50,11 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="reset">Reset</string>
     <string name="new_phone">New Phone #</string>
+    <string name="autopolo">AUTO-POLO</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="choose_your_polo">Choose your Polo</string>
+    <string name="add_a_timer">Add a timer?</string>
+    <string name="since_you_been_gone">Since you\'ve been gone</string>
 
 </resources>

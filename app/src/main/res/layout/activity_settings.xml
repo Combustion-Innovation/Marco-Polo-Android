@@ -106,7 +106,7 @@
             android:layout_centerHorizontal="true"/>
 
         <Button
-            android:id="@+id/distance_kilometers_button"
+            android:id="@+id/distance_kilometers"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:layout_below="@+id/distance_title"
@@ -116,7 +116,7 @@
             android:textColor="@color/white"/>
 
         <Button
-            android:id="@+id/distance_miles_button"
+            android:id="@+id/distance_miles"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:layout_below="@+id/distance_title"
