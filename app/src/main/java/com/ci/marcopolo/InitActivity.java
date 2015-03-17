@@ -118,7 +118,7 @@ public class InitActivity extends FragmentActivity {
             System.exit(1);
             return;
         }
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(), AutoPoloActivity.class);
         intent.putExtra("user_data", other_data);
         startActivity(intent);
         finish();

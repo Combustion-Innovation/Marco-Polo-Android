@@ -87,13 +87,9 @@ public class MainActivity extends Activity implements Communicator {
 
         @Override
         public void onClick(View v) {
-            ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this,
-                    Pair.create((View) autoPoloLayout, "autopolo_layout"),
-                    Pair.create((View) autoPoloImage, "autopolo_image"),
-                    Pair.create((View) autoPoloButton, "autopolo_button"));
             Intent intent = new Intent(getApplicationContext(), AutoPoloActivity.class);
             intent.putExtra("user_data", user_data);
-            startActivity(intent, activityOptions.toBundle());
+            startActivity(intent);
         }
     };
 
@@ -120,11 +116,6 @@ public class MainActivity extends Activity implements Communicator {
         autoPoloButton.setOnClickListener(autoPoloOCL);
         autoPoloLayout.bringToFront();  // prevents the bottom buttons from overlapping this
         autoPoloLayoutStartHeight = autoPoloLayout.getLayoutParams().height;
-
-        // setup transitions
-        Window window = getWindow();
-        window.setSharedElementEnterTransition(new Explode());
-        window.setSharedElementExitTransition(new Explode());
     }
 
     @Override
@@ -150,8 +141,8 @@ public class MainActivity extends Activity implements Communicator {
 
         getListOfMarcoPolosTask.setCommunicator(this);
         data.put("user_id", user_id);
-        data.put("lat", "1");
-        data.put("lng", "1");
+        data.put("lat", "1");   // TODO this is random
+        data.put("lng", "1");   // TODO this is random
 
         getListOfMarcoPolosTask.execute(data);
     }

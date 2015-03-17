@@ -56,5 +56,7 @@
     <string name="choose_your_polo">Choose your Polo</string>
     <string name="add_a_timer">Add a timer?</string>
     <string name="since_you_been_gone">Since you\'ve been gone</string>
+    <string name="record">Record</string>
+    <string name="ok">OK</string>
 
 </resources>
