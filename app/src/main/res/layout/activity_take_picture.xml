@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.ci.marcopolo.AutoFitTextureView
+    <SurfaceView
         android:id="@+id/take_picture_camera_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

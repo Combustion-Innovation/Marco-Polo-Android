@@ -5,8 +5,8 @@
 
     <Button
         android:id="@+id/record_audio_cancel_button"
-        android:layout_width="60dp"
-        android:layout_height="30dp"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:text="@string/cancel"
@@ -15,7 +15,7 @@
     <Button
         android:id="@+id/record_audio_main_button"
         android:layout_width="100dp"
-        android:layout_height="50dp"
+        android:layout_height="80dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:text="@string/record"
@@ -23,8 +23,8 @@
 
     <Button
         android:id="@+id/record_audio_ok_button"
-        android:layout_width="60dp"
-        android:layout_height="30dp"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:text="@string/ok"

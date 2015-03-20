@@ -71,11 +71,15 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
     private View.OnClickListener placeButtonOCL = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.d(TAG, "Setting a location Auto-Polo");
+            Log.d(TAG, "Setting a place Auto-Polo");
 
             if (lastLocation != null) {
                 Log.d(TAG, "Longitude is " + lastLocation.getLongitude());
                 Log.d(TAG, "Latitude is " + lastLocation.getLatitude());
+
+                Toast.makeText(AutoPoloActivity.this, "Longitude is " + lastLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AutoPoloActivity.this, "Latitude is " + lastLocation.getLatitude(), Toast.LENGTH_SHORT).show();
+
             } else {
                 Log.d(TAG, "The location hasn't been determined yet");
             }
@@ -95,6 +99,7 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+        googleApiClient.connect();
 
         // get layout objects
         backButton = (TextView) findViewById(R.id.back);
@@ -116,7 +121,8 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
                 String autopoloAudio = data.getStringExtra("autopolo_audio");
                 Log.d(TAG, "Audio saved to " + autopoloAudio);
             } else if (requestCode == TAKE_PICTURE) {
-                Log.d(TAG, "TakePictureActivity finished!");
+                String autopoloImage = data.getStringExtra("autopolo_image");
+                Log.d(TAG, "Image saved to " + autopoloImage);
             }
         } else {
             Log.d(TAG, "An intent was cancelled");
@@ -127,10 +133,10 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
     public void onConnected(Bundle bundle) {
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
-        Log.d(TAG, "Longitude is " + lastLocation.getLongitude());
-        Log.d(TAG, "Latitude is " + lastLocation.getLatitude());
-
-        Toast.makeText(this, "Connected to the Google API!", Toast.LENGTH_SHORT);
+        if (lastLocation != null) {
+            Log.d(TAG, "Longitude is " + lastLocation.getLongitude());
+            Log.d(TAG, "Latitude is " + lastLocation.getLatitude());
+        }
     }
 
     @Override
@@ -140,6 +146,8 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(TAG, "Connection to the Google API failed.");
+        Log.d(TAG, "Connection to the Google API failed");
+        Log.d(TAG, connectionResult.toString());
+        Log.d(TAG, "Error code: " + connectionResult.getErrorCode());
     }
 }
