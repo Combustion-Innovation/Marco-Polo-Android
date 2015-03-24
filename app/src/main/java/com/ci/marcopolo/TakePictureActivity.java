@@ -7,10 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
-import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -20,12 +20,16 @@ import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 
 /**
  * Created by Alex on 3/16/15.
  */
 public class TakePictureActivity extends Activity {
     public final static String TAG = "TakePictureActivity";
+
+    // callback codes
+    public final static int EDIT_PICTURE = 0;
 
     // camera objects
     private Camera camera;
@@ -48,28 +52,57 @@ public class TakePictureActivity extends Activity {
         }
     };
 
-    private View.OnClickListener captureButtonOCL = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Log.d(TAG, "Capturing a photo...");
-            camera.takePicture(null,
-                    null,
-                    new Camera.PictureCallback() {   // jpeg
-                        @Override
-                        public void onPictureTaken(byte[] bytes, Camera camera) {
-                            Log.d(TAG, "onPictureTaken (jpeg)");
-                            Bitmap bitmapPicture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp_autopolo_image.jpeg";
-                            saveImage(bitmapPicture, imagePath);
+    // OTLs
+    private View.OnTouchListener captureButtonOTL = new View.OnTouchListener() {
+        long pressedTime = 0;
 
-                            Intent intent = getIntent();
-                            intent.putExtra("autopolo_image", imagePath);
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        }
-                    });
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                pressedTime = System.currentTimeMillis();
+            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                long clickTime = System.currentTimeMillis() - pressedTime;
+                if (clickTime < 1000) {
+                    capturePhotoForEditing();
+                }
+            }
+
+            return false;
         }
     };
+
+    // OLCLs
+    private View.OnLongClickListener captureButtonOLCL = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            captureVideo();
+
+            return true;
+        }
+    };
+
+    private void capturePhotoForEditing() {
+        Log.d(TAG, "Capturing a photo...");
+        camera.takePicture(null,
+                null,
+                new Camera.PictureCallback() {   // jpeg
+                    @Override
+                    public void onPictureTaken(byte[] bytes, Camera camera) {
+                        Log.d(TAG, "onPictureTaken (jpeg)");
+                        Bitmap bitmapPicture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp_autopolo_image.jpeg";
+                        saveImage(bitmapPicture, imagePath);
+
+                        Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
+                        intent.putExtra("autopolo_image", imagePath);
+                        startActivityForResult(intent, EDIT_PICTURE);
+                    }
+                });
+    }
+
+    private void captureVideo() {
+        Log.d(TAG, "Capturing video...");
+    }
 
     private void saveImage(Bitmap bitmap, String path) {
         Matrix matrix = new Matrix();
@@ -103,7 +136,8 @@ public class TakePictureActivity extends Activity {
 
         // setup layout objects
         backButton.setOnClickListener(backOCL);
-        captureButton.setOnClickListener(captureButtonOCL);
+        captureButton.setOnTouchListener(captureButtonOTL);
+        captureButton.setOnLongClickListener(captureButtonOLCL);
 
         // setup camera
         surfaceView = (SurfaceView) findViewById(R.id.take_picture_camera_view);

@@ -81,7 +81,7 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
                 Toast.makeText(AutoPoloActivity.this, "Latitude is " + lastLocation.getLatitude(), Toast.LENGTH_SHORT).show();
 
             } else {
-                Log.d(TAG, "The location hasn't been determined yet");
+                Log.d(TAG, "Your location hasn't been determined yet");
             }
         }
     };
