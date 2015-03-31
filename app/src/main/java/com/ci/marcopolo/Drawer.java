@@ -1,6 +1,7 @@
 package com.ci.marcopolo;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,6 +10,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -18,9 +20,10 @@ import java.util.ArrayList;
 public class Drawer extends View {
     public final static String TAG = "Drawer";
 
+    private int actionBarHeight;
+
     // drawing objects
     private Paint paint;
-    private int currentLineIndex = 0;
     private ArrayList<ArrayList<PointF>> lineList;
 
     public Drawer(Context context) {
@@ -39,65 +42,103 @@ public class Drawer extends View {
     }
 
     private void init() {
+        Toast.makeText(getContext(), TAG + " init", Toast.LENGTH_SHORT).show();
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(6);
-        lineList = new ArrayList<ArrayList<PointF>>();
-        lineList.add(new ArrayList<PointF>());  // create an initial line to fill
+        setLineList(new ArrayList<ArrayList<PointF>>());
+        getLineList().add(new ArrayList<PointF>());  // create an initial line to fill
         setColor(Color.WHITE);
+
+        // get action bar height
+        try {
+            final TypedArray styledAttributes = getContext().getTheme().obtainStyledAttributes(
+                    new int[]{android.R.attr.actionBarSize});
+            actionBarHeight = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Action bar error wtf", Toast.LENGTH_SHORT).show();
+            actionBarHeight = 100;  // a guess lol
+        }
     }
 
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        for (int i = 0; i < lineList.size(); i++) {
-            ArrayList<PointF> currentLine = lineList.get(i);
-            if (currentLine.size() < 2) continue;
-            for (int j = 0; j < currentLine.size() - 1; j++) {
-                PointF currentPoint = currentLine.get(j);
-                PointF nextPoint = currentLine.get(j + 1);
-
-                canvas.drawLine(currentPoint.x,
-                        currentPoint.y,
-                        nextPoint.x,
-                        nextPoint.y,
-                        paint);
+        for (int i = 0; i < getLineList().size(); i++) {
+            ArrayList<PointF> currentLine = getLineList().get(i);
+            if (currentLine.size() == 0) {
+                continue;
+            } else if (currentLine.size() == 1) {
+                PointF point = currentLine.get(0);
+                canvas.drawPoint(point.x, point.y, paint);
+            } else {
+                drawLine(canvas, currentLine);
             }
         }
     }
 
+    private void drawLine(Canvas canvas, ArrayList<PointF> line) {
+        for (int j = 0; j < line.size() - 1; j++) {
+            PointF currentPoint = line.get(j);
+            PointF nextPoint = line.get(j + 1);
+
+            canvas.drawLine(currentPoint.x,
+                    currentPoint.y,
+                    nextPoint.x,
+                    nextPoint.y,
+                    paint);
+        }
+    }
+
     private void addPoint(PointF point) {
-        lineList.get(currentLineIndex).add(point);
+        getLineList().get(getLineList().size() - 1).add(point);
     }
 
     private void createNewLine() {
-        currentLineIndex++;
-        lineList.add(new ArrayList<PointF>());
+        getLineList().add(new ArrayList<PointF>());
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
-        if (action == MotionEvent.ACTION_MOVE) {
-            Log.d(TAG, "Adding a point to the current pointList");
-            PointF currentPoint = new PointF(event.getRawX(), event.getRawY());
+        PointF currentPoint = new PointF(event.getRawX(), event.getRawY() - actionBarHeight / 2);
+        //Log.d(TAG, "X: " + event.getRawX());
+        //Log.d(TAG, "Y: " + event.getRawY());
+        if (action == MotionEvent.ACTION_DOWN) {
+            addPoint(currentPoint);
+
+            invalidate();
+            return true;
+        } else if (action == MotionEvent.ACTION_MOVE) {
             addPoint(currentPoint);
 
             invalidate();
             return true;
         } else if (action == MotionEvent.ACTION_UP) {
-            Log.d(TAG, "Adding a line to the lineList");
-            PointF currentPoint = new PointF(event.getRawX(), event.getRawY());
-            addPoint(currentPoint);
+            if (getLineList().get(getLineList().size() - 1).size() != 1) {
+                addPoint(currentPoint);
+            }
             createNewLine();
 
             invalidate();
             return true;
+        } else {
+            invalidate();
         }
         return true;
     }
 
     public void setColor(int color) {
         paint.setColor(color);
+    }
+
+    public ArrayList<ArrayList<PointF>> getLineList() {
+        return lineList;
+    }
+
+    public void setLineList(ArrayList<ArrayList<PointF>> lineList) {
+        Toast.makeText(getContext(), TAG + " setLineList", Toast.LENGTH_SHORT).show();
+        this.lineList = lineList;
     }
 }

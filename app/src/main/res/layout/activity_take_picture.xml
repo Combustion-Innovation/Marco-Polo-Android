@@ -9,25 +9,65 @@
         android:layout_height="fill_parent"
         android:background="@null" />
 
-    <TextView
+    <Button
         android:id="@+id/back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
-        android:text="X"
-        android:textColor="@color/gray"
-        android:textSize="20sp"/>
+        android:background="@drawable/close2x"
+        android:scaleType="fitXY"/>
+
+    <Button
+        android:id="@+id/flash"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/flashoff2x"
+        android:scaleType="fitXY"/>
+
+    <Button
+        android:id="@+id/zoom_bar"
+        android:layout_width="10dp"
+        android:layout_height="300dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="5dp"
+        android:visibility="invisible"
+        android:background="@drawable/zoombar"
+        android:scaleType="fitXY"/>
 
     <Button
         android:id="@+id/take_picture_capture_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Capture"
-        android:textColor="@color/gray"
-        android:textSize="14sp"/>
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/camerabutton2x"/>
+
+    <Button
+        android:id="@+id/gallery"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/gallery2x"/>
+
+    <Button
+        android:id="@+id/rotate_camera"
+        android:layout_width="30dp"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/rotatecamera2x"/>
 </RelativeLayout>

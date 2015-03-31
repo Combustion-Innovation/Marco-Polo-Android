@@ -2,13 +2,18 @@ package com.ci.marcopolo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.CursorLoader;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -20,6 +25,7 @@ import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Calendar;
 
 /**
@@ -30,17 +36,23 @@ public class TakePictureActivity extends Activity {
 
     // callback codes
     public final static int EDIT_PICTURE = 0;
+    public final static int GALLERY_PICTURE = 1;
 
     // camera objects
     private Camera camera;
-    private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private boolean cameraConfigured = false;
     private boolean inPreview = false;
 
     // layout objects
-    private TextView backButton;
+    private SurfaceView surfaceView;
+    private Button backButton;
+    private Button flashButton;
+    private Button zoomBar;
+    private Button galleryButton;
     private Button captureButton;
+    private Button rotateCameraButton;
+
 
     // OCLs
     private View.OnClickListener backOCL = new View.OnClickListener() {
@@ -49,6 +61,24 @@ public class TakePictureActivity extends Activity {
             Intent intent = getIntent();
             setResult(RESULT_CANCELED, intent);
             finish();
+        }
+    };
+
+    private View.OnClickListener flashOCL = new View.OnClickListener() {
+        boolean flashOn = true;
+        @Override
+        public void onClick(View view) {
+            Log.d(TAG, "Toggling the flash");
+            toggleFlash(flashOn);
+            flashOn = !flashOn;
+        }
+    };
+
+    private View.OnClickListener galleryOCL = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(galleryIntent , GALLERY_PICTURE);
         }
     };
 
@@ -125,25 +155,74 @@ public class TakePictureActivity extends Activity {
         }
     }
 
+    private void toggleFlash(boolean flashOn) {
+        boolean hasFlash = getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+        if (hasFlash) {
+            Camera.Parameters p = camera.getParameters();
+            if (flashOn) {
+                Log.d(TAG, "Turning on flash");
+                p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                flashButton.setBackground(getResources().getDrawable(R.drawable.flash2x));
+            } else {
+                Log.d(TAG, "Turning off flash");
+                p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                flashButton.setBackground(getResources().getDrawable(R.drawable.flashoff2x));
+            }
+            camera.setParameters(p);
+        } else {
+            Log.d(TAG, "This device does not have a flashlight.");
+        }
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(getApplicationContext(), contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_picture);
 
         // get layout objects
-        backButton = (TextView) findViewById(R.id.back);
+        surfaceView = (SurfaceView) findViewById(R.id.take_picture_camera_view);
+        backButton = (Button) findViewById(R.id.back);
+        flashButton = (Button) findViewById(R.id.flash);
+        zoomBar = (Button) findViewById(R.id.zoom_bar);
+        galleryButton = (Button) findViewById(R.id.gallery);
         captureButton = (Button) findViewById(R.id.take_picture_capture_button);
+        rotateCameraButton = (Button) findViewById(R.id.rotate_camera);
 
         // setup layout objects
         backButton.setOnClickListener(backOCL);
+        flashButton.setOnClickListener(flashOCL);
+        galleryButton.setOnClickListener(galleryOCL);
         captureButton.setOnTouchListener(captureButtonOTL);
         captureButton.setOnLongClickListener(captureButtonOLCL);
 
         // setup camera
-        surfaceView = (SurfaceView) findViewById(R.id.take_picture_camera_view);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(surfaceCallback);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == GALLERY_PICTURE) {
+                Uri imageUri = data.getData();
+                Log.d(TAG, "The returned image path is " + imageUri.getPath());
+                Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
+                intent.putExtra("autopolo_image", getRealPathFromURI(imageUri));
+                startActivity(intent);
+            }
+        } else {
+            Log.d(TAG, "There was an error with an intent.");
+        }
     }
 
     @Override
@@ -209,9 +288,11 @@ public class TakePictureActivity extends Activity {
         @Override
         public void surfaceCreated(SurfaceHolder surfaceHolder) {
             // the preview is rotated in portrait without this
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            int orientation = getResources().getConfiguration().orientation;
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 camera.setDisplayOrientation(90);
-            } else {
+            } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                // TODO check for the specific rotation b/c one of the landscapes has an upside down preview
                 camera.setDisplayOrientation(0);
             }
         }
