@@ -24,7 +24,7 @@ public class Drawer extends View {
 
     // drawing objects
     private Paint paint;
-    private ArrayList<ArrayList<PointF>> lineList;
+    public ArrayList<ArrayList<PointF>> lineList;
 
     public Drawer(Context context) {
         super(context);
@@ -46,8 +46,7 @@ public class Drawer extends View {
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(6);
-        setLineList(new ArrayList<ArrayList<PointF>>());
-        getLineList().add(new ArrayList<PointF>());  // create an initial line to fill
+        resetLineList();
         setColor(Color.WHITE);
 
         // get action bar height
@@ -60,6 +59,11 @@ public class Drawer extends View {
             Toast.makeText(getContext(), "Action bar error wtf", Toast.LENGTH_SHORT).show();
             actionBarHeight = 100;  // a guess lol
         }
+    }
+
+    public void resetLineList() {
+        setLineList(new ArrayList<ArrayList<PointF>>());
+        getLineList().add(new ArrayList<PointF>());  // create an initial line to fill
     }
 
     @Override
