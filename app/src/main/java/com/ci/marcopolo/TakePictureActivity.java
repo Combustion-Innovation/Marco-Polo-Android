@@ -214,11 +214,17 @@ public class TakePictureActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == GALLERY_PICTURE) {
-                Uri imageUri = data.getData();
-                Log.d(TAG, "The returned image path is " + imageUri.getPath());
-                Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
-                intent.putExtra("autopolo_image", getRealPathFromURI(imageUri));
-                startActivity(intent);
+                try {
+                    Uri imageUri = data.getData();
+                    Log.d(TAG, "The returned image path is " + imageUri.getPath());
+                    Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
+                    intent.putExtra("autopolo_image", getRealPathFromURI(imageUri));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace(System.err);
+                    Toast.makeText(this, "wtffff", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         } else {
             Log.d(TAG, "There was an error with an intent.");

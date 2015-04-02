@@ -9,7 +9,7 @@ buildscript {
 apply plugin: 'com.android.application'
 android {
     compileSdkVersion 21
-    buildToolsVersion '21.1.0'
+    buildToolsVersion '21.1.2'
     defaultConfig {
         applicationId 'com.ci.marcopolo'
         minSdkVersion 16
@@ -40,6 +40,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.0.0'
     compile project(':ContactManager')
     compile 'com.daimajia.swipelayout:library:1.1.8'
-    compile project(':facebook')
     compile project(':facebookmanager')
 }
