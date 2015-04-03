@@ -141,8 +141,8 @@ public class MainActivity extends Activity implements Communicator {
 
         getListOfMarcoPolosTask.setCommunicator(this);
         data.put("user_id", user_id);
-        data.put("lat", "1");   // TODO this is random
-        data.put("lng", "1");   // TODO this is random
+        data.put("lat", "1");   // TODO these are random
+        data.put("lng", "1");
 
         getListOfMarcoPolosTask.execute(data);
     }
@@ -159,7 +159,7 @@ public class MainActivity extends Activity implements Communicator {
             Log.d(TAG, clickedUser.toString(4));
             user_id = currentUser.getString("user_id");
             sendee_id = clickedUser.getString("user_id");
-            marco_id = clickedUser.getString("marco_id");    // TODO not sure where to find this value
+            marco_id = clickedUser.getString("marco_id");
             lat = "147";        // TODO get the real value of lat
             lng = "123";        // TODO get the real value of lng
         } catch (Exception e) {

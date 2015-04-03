@@ -37,6 +37,10 @@ public class TakePictureActivity extends Activity {
     // callback codes
     public final static int EDIT_PICTURE = 0;
     public final static int GALLERY_PICTURE = 1;
+    public final static String AUTOPOLO_IMAGE_STRING = "0";
+    public final static String AUTOPOLO_IMAGE_URI = "1";
+
+    private final static String AUTOPOLO_IMAGE_FILENAME = "/temp_autopolo_image.jpeg";
 
     // camera objects
     private Camera camera;
@@ -120,11 +124,11 @@ public class TakePictureActivity extends Activity {
                     public void onPictureTaken(byte[] bytes, Camera camera) {
                         Log.d(TAG, "onPictureTaken (jpeg)");
                         Bitmap bitmapPicture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp_autopolo_image.jpeg";
+                        String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + AUTOPOLO_IMAGE_FILENAME;
                         saveImage(bitmapPicture, imagePath);
 
                         Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
-                        intent.putExtra("autopolo_image", imagePath);
+                        intent.putExtra(AUTOPOLO_IMAGE_STRING, imagePath);
                         startActivityForResult(intent, EDIT_PICTURE);
                     }
                 });
@@ -174,15 +178,6 @@ public class TakePictureActivity extends Activity {
         }
     }
 
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
-        CursorLoader loader = new CursorLoader(getApplicationContext(), contentUri, proj, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -217,8 +212,9 @@ public class TakePictureActivity extends Activity {
                 try {
                     Uri imageUri = data.getData();
                     Log.d(TAG, "The returned image path is " + imageUri.getPath());
+                    Toast.makeText(this, "The returned image path is " + imageUri.getPath(), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
-                    intent.putExtra("autopolo_image", getRealPathFromURI(imageUri));
+                    intent.putExtra(AUTOPOLO_IMAGE_URI, imageUri);
                     startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -228,6 +224,8 @@ public class TakePictureActivity extends Activity {
             }
         } else {
             Log.d(TAG, "There was an error with an intent.");
+            Log.d(TAG, "resultCode " + resultCode);
+            Log.d(TAG, "requestCode " + requestCode);
         }
     }
 
