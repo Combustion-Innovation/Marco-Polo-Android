@@ -2,6 +2,8 @@ package com.ci.marcopolo;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -24,7 +27,9 @@ public class Drawer extends View {
 
     // drawing objects
     private Paint paint;
-    public ArrayList<ArrayList<PointF>> lineList;
+    private Bitmap canvasOverlayBitmap;
+    private Canvas canvasOverlay;
+    private ArrayList<ArrayList<PointF>> lineList;
 
     public Drawer(Context context) {
         super(context);
@@ -42,9 +47,18 @@ public class Drawer extends View {
     }
 
     private void init() {
+        // setup paint
         paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(6);
+        // setup canvasOverlay
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        options.inScaled = false;
+        Bitmap existingBitmap = BitmapFactory.decodeFile(TakePictureActivity.AUTOPOLO_IMAGE_FILENAME, options);
+        canvasOverlayBitmap = existingBitmap.copy(existingBitmap.getConfig(), true);
+        canvasOverlay = new Canvas(canvasOverlayBitmap);
+        // setup lineList
         setLineList(new ArrayList<ArrayList<PointF>>());
         getLineList().add(new ArrayList<PointF>());  // create an initial line to fill
         setColor(Color.WHITE);
@@ -64,6 +78,11 @@ public class Drawer extends View {
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        drawOnCanvas(canvas);
+        drawOnCanvas(canvasOverlay);
+    }
+
+    private void drawOnCanvas(Canvas canvas) {
         for (int i = 0; i < getLineList().size(); i++) {
             ArrayList<PointF> currentLine = getLineList().get(i);
             if (currentLine.size() == 0) {
@@ -72,6 +91,8 @@ public class Drawer extends View {
                 PointF point = currentLine.get(0);
                 canvas.drawPoint(point.x, point.y, paint);
             } else {
+                PointF point = currentLine.get(0);
+                canvas.drawPoint(point.x, point.y, paint);
                 drawLine(canvas, currentLine);
             }
         }
@@ -138,5 +159,13 @@ public class Drawer extends View {
 
     public void setLineList(ArrayList<ArrayList<PointF>> lineList) {
         this.lineList = lineList;
+    }
+
+    public Canvas getCanvasOverlay() {
+        return canvasOverlay;
+    }
+
+    public Bitmap getCanvasOverlayBitmap() {
+        return canvasOverlayBitmap;
     }
 }

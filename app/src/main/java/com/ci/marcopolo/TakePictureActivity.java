@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -12,21 +11,16 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.v4.content.CursorLoader;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.util.Calendar;
 
 /**
  * Created by Alex on 3/16/15.
@@ -40,13 +34,16 @@ public class TakePictureActivity extends Activity {
     public final static String AUTOPOLO_IMAGE_STRING = "0";
     public final static String AUTOPOLO_IMAGE_URI = "1";
 
-    private final static String AUTOPOLO_IMAGE_FILENAME = "/temp_autopolo_image.jpeg";
+    public final static String AUTOPOLO_IMAGE_FILENAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp_autopolo_image.jpeg";
 
     // camera objects
     private Camera camera;
     private SurfaceHolder surfaceHolder;
     private boolean cameraConfigured = false;
     private boolean inPreview = false;
+    private final static int BACK_CAMERA = 0;
+    private final static int FRONT_CAMERA = 1;
+    private int cameraMode;
 
     // layout objects
     private SurfaceView surfaceView;
@@ -70,6 +67,7 @@ public class TakePictureActivity extends Activity {
 
     private View.OnClickListener flashOCL = new View.OnClickListener() {
         boolean flashOn = true;
+
         @Override
         public void onClick(View view) {
             Log.d(TAG, "Toggling the flash");
@@ -82,7 +80,7 @@ public class TakePictureActivity extends Activity {
         @Override
         public void onClick(View view) {
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(galleryIntent , GALLERY_PICTURE);
+            startActivityForResult(galleryIntent, GALLERY_PICTURE);
         }
     };
 
@@ -124,7 +122,7 @@ public class TakePictureActivity extends Activity {
                     public void onPictureTaken(byte[] bytes, Camera camera) {
                         Log.d(TAG, "onPictureTaken (jpeg)");
                         Bitmap bitmapPicture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        String imagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + AUTOPOLO_IMAGE_FILENAME;
+                        String imagePath = AUTOPOLO_IMAGE_FILENAME;
                         saveImage(bitmapPicture, imagePath);
 
                         Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
@@ -200,6 +198,7 @@ public class TakePictureActivity extends Activity {
         captureButton.setOnLongClickListener(captureButtonOLCL);
 
         // setup camera
+        cameraMode = BACK_CAMERA;
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(surfaceCallback);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -209,23 +208,13 @@ public class TakePictureActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == GALLERY_PICTURE) {
-                try {
-                    Uri imageUri = data.getData();
-                    Log.d(TAG, "The returned image path is " + imageUri.getPath());
-                    Toast.makeText(this, "The returned image path is " + imageUri.getPath(), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
-                    intent.putExtra(AUTOPOLO_IMAGE_URI, imageUri);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    e.printStackTrace(System.err);
-                    Toast.makeText(this, "wtffff", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                Uri imageUri = data.getData();
+                Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
+                intent.putExtra(AUTOPOLO_IMAGE_URI, imageUri);
+                startActivity(intent);
             }
         } else {
             Log.d(TAG, "There was an error with an intent.");
-            Log.d(TAG, "resultCode " + resultCode);
-            Log.d(TAG, "requestCode " + requestCode);
         }
     }
 
@@ -234,7 +223,7 @@ public class TakePictureActivity extends Activity {
         super.onResume();
 
         try {
-            camera = Camera.open();
+            camera = Camera.open(cameraMode);
             startPreview();
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -248,9 +237,11 @@ public class TakePictureActivity extends Activity {
             camera.stopPreview();
         }
 
-        camera.release();
-        camera = null;
-        inPreview = false;
+        if (camera != null) {
+            camera.release();
+            camera = null;
+            inPreview = false;
+        }
 
         super.onPause();
     }
@@ -293,17 +284,19 @@ public class TakePictureActivity extends Activity {
         public void surfaceCreated(SurfaceHolder surfaceHolder) {
             // the preview is rotated in portrait without this
             int orientation = getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                camera.setDisplayOrientation(90);
-            } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                // TODO check for the specific rotation b/c one of the landscapes has an upside down preview
-                camera.setDisplayOrientation(0);
+            if (camera != null) {
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    camera.setDisplayOrientation(90);
+                } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    // TODO check for the specific rotation b/c one of the landscapes has an upside down preview
+                    camera.setDisplayOrientation(0);
+                }
             }
         }
 
         @Override
         public void surfaceChanged(SurfaceHolder surfaceHolderLocal, int format, int width, int height) {
-            if (surfaceHolder.getSurface() != null) {
+            if (surfaceHolder.getSurface() != null && camera != null) {
                 try {
                     camera.setPreviewDisplay(surfaceHolder);
                 } catch (Exception e) {
