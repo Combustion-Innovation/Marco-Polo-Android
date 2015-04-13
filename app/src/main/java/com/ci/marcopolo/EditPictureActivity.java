@@ -155,7 +155,7 @@ public class EditPictureActivity extends Activity {
     }
 
     private void saveUserDrawingToBitmap() {
-        Canvas canvas = drawer.getCanvasOverlay();
+        //Canvas canvas = drawer.getCanvasOverlay();
         Bitmap bmpBase = drawer.getCanvasOverlayBitmap();
         // Save Bitmap to File
         FileOutputStream fos = null;

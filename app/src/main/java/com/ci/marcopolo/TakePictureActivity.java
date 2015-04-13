@@ -1,6 +1,7 @@
 package com.ci.marcopolo;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -8,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,6 +38,7 @@ public class TakePictureActivity extends Activity {
     public final static String AUTOPOLO_IMAGE_URI = "1";
 
     public final static String AUTOPOLO_IMAGE_FILENAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp_autopolo_image.jpeg";
+    public final static String AUTOPOLO_VIDEO_FILENAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp_autopolo_video.mp4";
 
     // camera objects
     private Camera camera;
@@ -42,8 +46,12 @@ public class TakePictureActivity extends Activity {
     private boolean cameraConfigured = false;
     private boolean inPreview = false;
     private final static int BACK_CAMERA = 0;
-    private final static int FRONT_CAMERA = 1;
+    private final static int FRONT_CAMERA = 0;
     private int cameraMode;
+
+    // video objects
+    private MediaRecorder recorder;
+
 
     // layout objects
     private SurfaceView surfaceView;
@@ -96,6 +104,8 @@ public class TakePictureActivity extends Activity {
                 long clickTime = System.currentTimeMillis() - pressedTime;
                 if (clickTime < 1000) {
                     capturePhotoForEditing();
+                } else {
+                    stopCapturingVideo();
                 }
             }
 
@@ -110,6 +120,32 @@ public class TakePictureActivity extends Activity {
             captureVideo();
 
             return true;
+        }
+    };
+
+    private View.OnClickListener rotateCameraButtonOCL = new View.OnClickListener() {
+        boolean cameraOn = true;
+
+        @Override
+        public void onClick(View view) {
+            /*
+            if (cameraMode == BACK_CAMERA) {
+                cameraMode = FRONT_CAMERA;
+                stopCamera();
+                startCamera();
+            } else if (cameraMode == FRONT_CAMERA) {
+                cameraMode = BACK_CAMERA;
+                stopCamera();
+                startCamera();
+            }
+            */
+            // TODO camera.startPreview() is not working here for some reason
+            if (cameraOn) {
+                stopCamera();
+            } else {
+                startCamera();
+            }
+            cameraOn = !cameraOn;
         }
     };
 
@@ -134,6 +170,12 @@ public class TakePictureActivity extends Activity {
 
     private void captureVideo() {
         Log.d(TAG, "Capturing video...");
+        startVideo();
+    }
+
+    private void stopCapturingVideo() {
+        Log.d(TAG, "Stopped capturing video...");
+        stopVideo();
     }
 
     private void saveImage(Bitmap bitmap, String path) {
@@ -196,12 +238,15 @@ public class TakePictureActivity extends Activity {
         galleryButton.setOnClickListener(galleryOCL);
         captureButton.setOnTouchListener(captureButtonOTL);
         captureButton.setOnLongClickListener(captureButtonOLCL);
+        rotateCameraButton.setOnClickListener(rotateCameraButtonOCL);
 
         // setup camera
         cameraMode = BACK_CAMERA;
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(surfaceCallback);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+        // setup video
     }
 
     @Override
@@ -222,8 +267,21 @@ public class TakePictureActivity extends Activity {
     public void onResume() {
         super.onResume();
 
+        startCamera();
+    }
+
+    @Override
+    public void onPause() {
+        stopCamera();
+
+        super.onPause();
+    }
+
+    private void startCamera() {
         try {
-            camera = Camera.open(cameraMode);
+            if (camera == null) {
+                camera = Camera.open(cameraMode);
+            }
             startPreview();
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -231,9 +289,9 @@ public class TakePictureActivity extends Activity {
         }
     }
 
-    @Override
-    public void onPause() {
+    private void stopCamera() {
         if (inPreview) {
+            Log.d(TAG, "Stopping camera preview");
             camera.stopPreview();
         }
 
@@ -242,8 +300,38 @@ public class TakePictureActivity extends Activity {
             camera = null;
             inPreview = false;
         }
+    }
 
-        super.onPause();
+    private void startVideo() {
+        camera.unlock();
+        prepareRecorder();
+        recorder.start();
+    }
+
+    private void stopVideo() {
+        recorder.stop();
+        recorder.reset();
+        recorder.release();
+        camera.lock();
+    }
+
+    private void prepareRecorder() {
+        recorder = new MediaRecorder();
+        recorder.setCamera(camera);
+        recorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        recorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
+        CamcorderProfile cpHigh = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+        recorder.setProfile(cpHigh);
+        recorder.setOutputFile(AUTOPOLO_VIDEO_FILENAME);
+        recorder.setMaxDuration(10000); // 10 seconds
+        recorder.setMaxFileSize(5000000); // Approximately 5 megabytes
+        recorder.setPreviewDisplay(surfaceHolder.getSurface());
+        try {
+            recorder.prepare();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     private Camera.Size getBestPreviewSize(int width, int height, Camera.Parameters parameters) {
@@ -270,6 +358,7 @@ public class TakePictureActivity extends Activity {
     private void startPreview() {
         try {
             if (cameraConfigured && camera != null) {
+                Log.d(TAG, "Starting camera preview");
                 camera.startPreview();
                 inPreview = true;
             }
@@ -297,6 +386,7 @@ public class TakePictureActivity extends Activity {
         @Override
         public void surfaceChanged(SurfaceHolder surfaceHolderLocal, int format, int width, int height) {
             if (surfaceHolder.getSurface() != null && camera != null) {
+                // setup camera
                 try {
                     camera.setPreviewDisplay(surfaceHolder);
                 } catch (Exception e) {
