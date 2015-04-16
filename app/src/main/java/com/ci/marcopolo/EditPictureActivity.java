@@ -160,7 +160,7 @@ public class EditPictureActivity extends Activity {
         // Save Bitmap to File
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(TakePictureActivity.AUTOPOLO_IMAGE_FILENAME);
+            fos = new FileOutputStream(Constants.AUTOPOLO_IMAGE_FILENAME);
             bmpBase.compress(Bitmap.CompressFormat.PNG, 100, fos);
 
             fos.flush();

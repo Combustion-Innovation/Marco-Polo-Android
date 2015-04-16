@@ -1,26 +1,17 @@
 package com.ci.marcopolo;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.app.ActivityOptions;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.Point;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.transition.Explode;
-import android.transition.Transition;
-import android.transition.TransitionValues;
+import android.os.IBinder;
 import android.util.Log;
-import android.util.Pair;
-import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,9 +19,7 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -56,7 +45,7 @@ public class MainActivity extends Activity implements Communicator {
     private ListView listView;
     private RelativeLayout autoPoloLayout;
     private Button autoPoloButton;
-    private TextView autoPoloImage;
+    private ImageView autoPoloImage;
 
     private int autoPoloLayoutStartHeight;
 
@@ -108,7 +97,7 @@ public class MainActivity extends Activity implements Communicator {
         listView = (ListView) findViewById(R.id.main_list_view);
         autoPoloLayout = (RelativeLayout) findViewById(R.id.main_autopolo_layout);
         autoPoloButton = (Button) findViewById(R.id.main_autopolo_button);
-        autoPoloImage = (TextView) findViewById(R.id.main_autopolo_image);
+        autoPoloImage = (ImageView) findViewById(R.id.main_autopolo_image);
 
         // setup layout objects
         shareButton.setOnClickListener(shareOCL);
@@ -116,6 +105,22 @@ public class MainActivity extends Activity implements Communicator {
         autoPoloButton.setOnClickListener(autoPoloOCL);
         autoPoloLayout.bringToFront();  // prevents the bottom buttons from overlapping this
         autoPoloLayoutStartHeight = autoPoloLayout.getLayoutParams().height;
+
+        // location services
+        // TODO work on turning this into a service
+        Intent locationService = new Intent(getApplicationContext(), LocationService.class);
+        ServiceConnection serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+
+            }
+        };
+        bindService(locationService, serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -124,6 +129,8 @@ public class MainActivity extends Activity implements Communicator {
             if (requestCode == CHANGE_SETTINGS) {
                 user_data = data.getStringExtra("new_user_data");
             }
+        } else {
+            Log.d(TAG, "There was an error with an intent");
         }
     }
 

@@ -22,15 +22,13 @@
             android:textColor="@color/white"
             android:textSize="30sp"/>
 
-        <TextView
+        <ImageView
             android:id="@+id/main_autopolo_image"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:text="IMAGE"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:src="@drawable/autopoloicon2x"/>
 
         <TextView
             android:id="@+id/main_autopolo_status"

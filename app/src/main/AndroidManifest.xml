@@ -87,5 +87,9 @@
             android:name="com.ci.marcopolo.EditPictureActivity"
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
+        <activity
+            android:name=".LocationServicesActivity"
+            android:theme="@android:style/Theme.NoTitleBar">
+        </activity>
     </application>
 </manifest>

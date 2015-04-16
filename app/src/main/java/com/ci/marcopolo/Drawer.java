@@ -55,7 +55,7 @@ public class Drawer extends View {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         options.inScaled = true;
-        Bitmap existingBitmap = BitmapFactory.decodeFile(TakePictureActivity.AUTOPOLO_IMAGE_FILENAME, options);
+        Bitmap existingBitmap = BitmapFactory.decodeFile(Constants.AUTOPOLO_IMAGE_FILENAME, options);
         canvasOverlayBitmap = existingBitmap.copy(existingBitmap.getConfig(), true);
         canvasOverlay = new Canvas(canvasOverlayBitmap);
         // setup lineList

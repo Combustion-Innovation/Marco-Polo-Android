@@ -1,6 +1,7 @@
 package com.ci.marcopolo;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.transition.Explode;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,16 +38,43 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
     private Location lastLocation;
 
     // layout objects
-    private TextView backButton;
-    private TextView audioButton;
-    private TextView cameraButton;
-    private TextView placeButton;
+    private Button backButton;
+    private ImageButton offButton;
+    private ImageButton onButton;
+    private Button audioButton;
+    private Button cameraButton;
+    private Button placeButton;
+
+    // autopolo constants
+    public final static int AUTOPOLO_OFF = 0;
+    public final static int AUTOPOLO_ON = 1;
+
+    // autopolo state
+    private int autopoloStatus;
 
     // OCLs
     private View.OnClickListener backOCL = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             finish();
+        }
+    };
+
+    private View.OnClickListener offButtonOCL = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (autopoloStatus != AUTOPOLO_OFF) {
+                setAutopoloStatus(AUTOPOLO_OFF);
+            }
+        }
+    };
+
+    private View.OnClickListener onButtonOCL = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (autopoloStatus != AUTOPOLO_ON) {
+                setAutopoloStatus(AUTOPOLO_ON);
+            }
         }
     };
 
@@ -102,20 +132,29 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
         googleApiClient.connect();
 
         // get layout objects
-        backButton = (TextView) findViewById(R.id.back);
-        audioButton = (TextView) findViewById(R.id.autopolo_audio);
-        cameraButton = (TextView) findViewById(R.id.autopolo_camera);
-        placeButton = (TextView) findViewById(R.id.autopolo_place);
+        backButton = (Button) findViewById(R.id.back);
+        offButton = (ImageButton) findViewById(R.id.autopolo_off);
+        onButton = (ImageButton) findViewById(R.id.autopolo_on);
+        audioButton = (Button) findViewById(R.id.autopolo_audio);
+        cameraButton = (Button) findViewById(R.id.autopolo_camera);
+        placeButton = (Button) findViewById(R.id.autopolo_place);
 
         // setup layout objects
         backButton.setOnClickListener(backOCL);
+        offButton.setOnClickListener(offButtonOCL);
+        onButton.setOnClickListener(onButtonOCL);
         audioButton.setOnClickListener(audioButtonOCL);
         cameraButton.setOnClickListener(cameraButtonOCL);
         placeButton.setOnClickListener(placeButtonOCL);
+
+        // set autopolo status
+        int userAutopoloStatus = AUTOPOLO_ON;   // TODO get this from user profile
+        setAutopoloStatus(userAutopoloStatus);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO upload the autopolos to the server
         if (resultCode == RESULT_OK) {
             if (requestCode == RECORD_AUDIO) {
                 String autopoloAudio = data.getStringExtra("autopolo_audio");
@@ -126,6 +165,20 @@ public class AutoPoloActivity extends Activity implements GoogleApiClient.Connec
             }
         } else {
             Log.d(TAG, "An intent was cancelled");
+        }
+    }
+
+    private void setAutopoloStatus(int statusCode) {
+        if (statusCode == AUTOPOLO_OFF) {
+            offButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
+            onButton.setBackground(null);
+            // update autopolo status to off on server
+            autopoloStatus = AUTOPOLO_OFF;
+        } else {    // statusCode == AUTOPOLO_ON
+            onButton.setBackground(getResources().getDrawable(R.drawable.roundedbutton));
+            offButton.setBackground(null);
+            // update autopolo status to on on server
+            autopoloStatus = AUTOPOLO_ON;
         }
     }
 

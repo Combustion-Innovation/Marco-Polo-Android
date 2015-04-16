@@ -37,16 +37,13 @@ public class TakePictureActivity extends Activity {
     public final static String AUTOPOLO_IMAGE_STRING = "0";
     public final static String AUTOPOLO_IMAGE_URI = "1";
 
-    public final static String AUTOPOLO_IMAGE_FILENAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp_autopolo_image.jpeg";
-    public final static String AUTOPOLO_VIDEO_FILENAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/temp_autopolo_video.mp4";
-
     // camera objects
     private Camera camera;
     private SurfaceHolder surfaceHolder;
     private boolean cameraConfigured = false;
     private boolean inPreview = false;
     private final static int BACK_CAMERA = 0;
-    private final static int FRONT_CAMERA = 0;
+    private final static int FRONT_CAMERA = 1;
     private int cameraMode;
 
     // video objects
@@ -128,7 +125,7 @@ public class TakePictureActivity extends Activity {
 
         @Override
         public void onClick(View view) {
-            /*
+            //*
             if (cameraMode == BACK_CAMERA) {
                 cameraMode = FRONT_CAMERA;
                 stopCamera();
@@ -136,13 +133,6 @@ public class TakePictureActivity extends Activity {
             } else if (cameraMode == FRONT_CAMERA) {
                 cameraMode = BACK_CAMERA;
                 stopCamera();
-                startCamera();
-            }
-            */
-            // TODO camera.startPreview() is not working here for some reason
-            if (cameraOn) {
-                stopCamera();
-            } else {
                 startCamera();
             }
             cameraOn = !cameraOn;
@@ -158,7 +148,7 @@ public class TakePictureActivity extends Activity {
                     public void onPictureTaken(byte[] bytes, Camera camera) {
                         Log.d(TAG, "onPictureTaken (jpeg)");
                         Bitmap bitmapPicture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        String imagePath = AUTOPOLO_IMAGE_FILENAME;
+                        String imagePath = Constants.AUTOPOLO_IMAGE_FILENAME;
                         saveImage(bitmapPicture, imagePath);
 
                         Intent intent = new Intent(getApplicationContext(), EditPictureActivity.class);
@@ -322,7 +312,7 @@ public class TakePictureActivity extends Activity {
         recorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
         CamcorderProfile cpHigh = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
         recorder.setProfile(cpHigh);
-        recorder.setOutputFile(AUTOPOLO_VIDEO_FILENAME);
+        recorder.setOutputFile(Constants.AUTOPOLO_VIDEO_FILENAME);
         recorder.setMaxDuration(10000); // 10 seconds
         recorder.setMaxFileSize(5000000); // Approximately 5 megabytes
         recorder.setPreviewDisplay(surfaceHolder.getSurface());
@@ -359,6 +349,7 @@ public class TakePictureActivity extends Activity {
         try {
             if (cameraConfigured && camera != null) {
                 Log.d(TAG, "Starting camera preview");
+                camera.setPreviewDisplay(surfaceHolder);
                 camera.startPreview();
                 inPreview = true;
             }

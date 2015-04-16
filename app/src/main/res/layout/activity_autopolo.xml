@@ -37,7 +37,7 @@
     <LinearLayout
         android:id="@+id/autopolo_on_off_switch"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="80dp"
         android:layout_below="@id/autopolo_button"
         android:orientation="horizontal">
 
@@ -48,12 +48,13 @@
             android:layout_gravity="center"
             android:gravity="center">
 
-            <Button
+            <ImageButton
                 android:id="@+id/autopolo_off"
-                android:layout_width="40dp"
-                android:layout_height="20dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_centerInParent="true"
-                android:background="@drawable/off2x"/>
+                android:src="@drawable/off2x"
+                android:scaleType="fitCenter"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -63,12 +64,13 @@
             android:layout_gravity="center"
             android:gravity="center">
 
-            <Button
+            <ImageButton
                 android:id="@+id/autopolo_on"
-                android:layout_width="40dp"
-                android:layout_height="20dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_centerInParent="true"
-                android:background="@drawable/on2x"/>
+                android:src="@drawable/on2x"
+                android:scaleType="fitCenter"/>
         </RelativeLayout>
     </LinearLayout>
 
